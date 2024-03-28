@@ -1,11 +1,14 @@
 <template>
   <div>
+    <h1>Project Editor for "{{ projectName }}"</h1>
     <canvas ref="can" width="1200" height="700"></canvas>
     <button class="btns" @click="addRect">Квадрат</button>
     <button class="btns" @click="addCircle">Кругг</button>
     <button class="btns" @click="addImg">Картинка</button>
     <button class="btns" @click="saveProject">Сохранить</button>
-    <button class="btns" @click="saveCanvasAsImage">Сохранить как картинку</button>
+    <button class="btns" @click="saveCanvasAsImage">
+      Сохранить как картинку
+    </button>
   </div>
 </template>
 
@@ -15,13 +18,65 @@ import { fabric } from "fabric";
 export default {
   name: "ProjectEditor",
 
+  data() {
+    return {
+      canvas: null,
+      projectName: "",
+      projectData: null,
+    };
+  },
+
+  // watch: {
+  //   "$route.params.projectName": {
+  //     handler(newProjectName) {
+  //       if (newProjectName) {
+  //         this.loadProjectData();
+  //       }
+  //     },
+  //     immediate: true,
+  //   },
+  // },
+
   mounted() {
     this.canvas = new fabric.Canvas(this.$refs.can, {
       isDrawingMode: false,
     });
+    this.loadProject();
   },
 
   methods: {
+    loadProject() {
+      // Получаем имя проекта из параметров маршрута
+      this.projectName = this.$route.params.projectName;
+      // Формируем путь к файлу проекта
+      const projectFilePath = `/projects/${this.projectName}.json`;
+      // Загружаем файл проекта с помощью fetch
+      fetch(projectFilePath)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Project file not found");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Сохраняем данные проекта
+          this.projectData = data;
+          // Восстанавливаем состояние холста из данных проекта
+          this.restoreCanvasState();
+        })
+        .catch((error) => {
+          console.error("Error loading project:", error);
+        });
+    },
+
+    restoreCanvasState() {
+      if (!this.projectData) return;
+      // Восстанавливаем состояние холста из данных проекта
+      this.canvas.loadFromJSON(this.projectData, () => {
+        this.canvas.renderAll();
+      });
+    },
+
     //добавление квадрата(прямоугольника)
     addRect() {
       var rect = new fabric.Rect({
@@ -75,20 +130,19 @@ export default {
     },
 
     saveProject() {
-
       // Получаем JSON-представление состояния холста
       const jsonData = JSON.stringify(this.canvas.toJSON());
 
       // Создаем Blob из JSON-данных
-      const blob = new Blob([jsonData], { type: 'application/json' });
+      const blob = new Blob([jsonData], { type: "application/json" });
 
       // Создаем объект URL для Blob
       const url = URL.createObjectURL(blob);
 
       // Создаем ссылку для загрузки
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = 'canvas_project.json';
+      link.download = this.projectName + '.json';
 
       // Добавляем ссылку в документ
       document.body.appendChild(link);

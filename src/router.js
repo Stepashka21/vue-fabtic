@@ -1,18 +1,22 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
+import Router from 'vue-router';
 import ListProject from './components/ListProject.vue';
 import ProjectEditor from './components/ProjectEditor.vue';
 
-Vue.use(VueRouter);
+Vue.use(Router);
 
-const routes = [
-  { path: '/', component: ListProject },
-  { path: '/project/:projectName', component: ProjectEditor, props: true }
-];
-
-const router = new VueRouter({
-  mode: 'history',
-  routes
+export default new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: ListProject
+    },
+    {
+      path: '/edit/:projectName',
+      name: 'edit',
+      component: ProjectEditor,
+      props: true
+    }
+  ]
 });
-
-export default router;

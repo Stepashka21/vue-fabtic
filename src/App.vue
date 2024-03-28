@@ -1,19 +1,12 @@
 <template>
   <div id="app">
-    <ListProject />
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import ListProject from './components/ListProject.vue'
-// import ProjectEditor from './components/ProjectEditor.vue'
-
 export default {
-  name: 'App',
-  components: {
-    // ProjectEditor,
-    ListProject
-  }
+  name: 'App'
 }
 </script>
 

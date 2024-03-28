@@ -1,8 +1,10 @@
 <template>
   <div>
-    <h1>List of Projects</h1>
+    <h1>Все проекты</h1>
     <div v-for="project in projects" :key="project.id">
-      <button @click="navigateToProject(project)">{{ project.name }}</button>
+      <button @click="navigateToProject(project)"></button>
+      <!-- Используйте новый маршрут для редактора проекта -->
+      <router-link :to="{ name: 'edit', params: { projectName: project.name } }">{{ project.name }}</router-link>
     </div>
   </div>
 </template>
@@ -22,7 +24,7 @@ export default {
   methods: {
     async loadProjects() {
       
-      const files = require.context('../projects/', false, /.json$/);
+      const files = require.context('../../public/projects/', false, /.json$/);
       const projects = files.keys().map(filePath => {
         
         const parts = filePath.split('/');
@@ -36,9 +38,18 @@ export default {
       this.projects = projects.map(name => ({ name }));
     },
     navigateToProject(project) {
+      // Получаем имя целевого проекта из параметров маршрута
+      const targetProjectName = project.name;
+      // Получаем текущий маршрут
+      const currentRouteName = this.$route.name;
+
+      // Проверяем, если текущий маршрут не совпадает с целевым маршрутом
+      if (currentRouteName !== 'edit' || this.$route.params.projectName !== targetProjectName) {
+        // Выполняем переход к целевому маршруту
+        this.$router.push({ name: 'edit', params: { projectName: targetProjectName }});
       
-      this.$router.push({ name: 'project', params: { projectName: project.name }});
-    }
+      }
+    },
   }
 };
 </script>
