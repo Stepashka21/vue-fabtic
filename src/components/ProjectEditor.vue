@@ -13,7 +13,7 @@
 import { fabric } from "fabric";
 
 export default {
-  name: "HelloWorld",
+  name: "ProjectEditor",
 
   mounted() {
     this.canvas = new fabric.Canvas(this.$refs.can, {
