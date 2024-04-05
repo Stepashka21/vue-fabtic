@@ -6,8 +6,8 @@
       <div class="lay">
         <h2>Layers</h2>
           <draggable v-model='layers' @end='above'>
-            <div v-for='(layer, index) in layers' :key='index'>
-              <span>{{layer.name}} / {{ layer.selected ? "selected" : "deselected" }}</span>
+            <div v-for='(layer, index) in layers' :key='index'> 
+              <span @click="selectLayer(layer)" class="layer">{{layer.name}} / {{ layer.selected ? "selected" : "deselected" }}</span>
             </div>
           </draggable>
       </div>
@@ -19,6 +19,7 @@
           <button class="btns" @click="addImg">Картинка</button>
           <button class="btns" @click="saveProject">Сохранить</button>
           <button class="btns" @click="saveCanvasAsImage">Сохранить как картинку</button>
+          <button class="btns" @click="deleteEl">Удалить элемент</button>
           <button class="btns" @click="clearCanvas">Очистить холст</button>
         </div>
 
@@ -101,12 +102,7 @@ export default {
 
     above(ev) {
       this.layers[ev.newIndex].object.moveTo(this.layers.length - ev.newIndex - 1)
-      console.log(ev)
-      // let temp = this.layers[idx - 1]
-      // this.layers.splice(idx - 1, 1, obj)
-      // this.layers.splice(idx, 1, temp)
-
-      // obj.object.moveTo(idx - 1)
+      // console.log(ev)
     },
     addRectangle() {
       const rect = new fabric.Rect({
@@ -165,11 +161,19 @@ export default {
       this.layers.unshift(layer);
       this.addListeners(layer)
     },
-
+     
     deselectAll() {
       this.canvas.discardActiveObject();
       this.selectedLayer = null;
       this.canvas.renderAll();
+    },
+    selectLayer(layer) {
+      if (layer.object) {
+        layer.selected = true;
+        // this.canvas.on('object:selected', console.log)
+        this.canvas.setActiveObject(layer.object);
+        this.canvas.renderAll();
+      }
     },
 
     saveProject() {
@@ -218,6 +222,12 @@ export default {
       document.body.removeChild(link);
     },
 
+    deleteEl() {
+      const activeObject = this.canvas.getActiveObject()
+      this.layers = this.layers.filter(layer => layer.object !== activeObject)
+      this.canvas.remove(activeObject);
+    },
+
     clearCanvas() {
       this.canvas.clear(); 
       this.layers = []; 
@@ -231,7 +241,11 @@ body {
   display: flex;
   background-color: white;
 }
-
+.layer{
+  cursor: pointer;
+  margin: 10px;
+  background-color: #b1b1b1;
+}
 .lay {
   margin-right: 40px;
 }

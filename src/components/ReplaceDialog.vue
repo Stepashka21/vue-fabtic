@@ -37,14 +37,6 @@ export default {
   mounted() {
     this.canvas = new fabric.Canvas(this.$refs.canvas);
     this.canvas.on('object:selected', console.log)
-    // this.canvas.on('object:selected', function(e) {
-    //   this.selectObject(e.target);
-    // }.bind(this));
-    // this.canvas.on('selection:created', function(e) {
-    //   this.selectObject(e.target);
-    // }.bind(this));
-    // this.canvas.on('selection:cleared', this.deselectAll.bind(this));
-
   },
   methods: {
     goToListProject() {
@@ -54,11 +46,6 @@ export default {
     above(ev) {
       this.layers[ev.newIndex].object.moveTo(this.layers.length - ev.newIndex - 1)
       console.log(ev)
-      // let temp = this.layers[idx - 1]
-      // this.layers.splice(idx - 1, 1, obj)
-      // this.layers.splice(idx, 1, temp)
-
-      // obj.object.moveTo(idx - 1)
     },
     addRectangle() {
       const rect = new fabric.Rect({
