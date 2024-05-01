@@ -45,6 +45,13 @@
         </div>
       </div>
     </div>
+    <div class="context-menu" v-show="contextMenuVisible" :style="{ top: contextMenuPosition.top + 'px', left: contextMenuPosition.left + 'px' }">
+      <ul>
+        <li @click="handleMenuItemClick('edit')">Редактировать</li>
+        <li @click="handleMenuItemClick('delete')">Удалить</li>
+        <!-- Добавьте другие пункты меню по вашему выбору -->
+      </ul>
+    </div>
   </div>
 </template>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
@@ -80,6 +87,9 @@ export default {
         "Inconsolata",
       ],
       selectedFont: "Times New Roman",
+
+      contextMenuVisible: false,
+      contextMenuPosition: { top: 0, left: 0 }
     };
   },
 
@@ -161,7 +171,9 @@ export default {
       // console.log(ev)
     },
     addRectangle() {
-      const rect = new fabric.Rect({
+      const rect = new fabric.Rect({    
+        id: this.generateId(), // Генерация уникального ID
+        name: "Rectangle", // Указание имени
         width: 100,
         height: 100,
         fill: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
@@ -176,6 +188,8 @@ export default {
     },
     addCircle() {
       const circle = new fabric.Circle({
+        id: this.generateId(),
+        name: "Circle",
         radius: 50,
         fill: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
           Math.random() * 256
@@ -197,7 +211,10 @@ export default {
         reader.onload = (event) => {
           const img = new Image();
           img.onload = () => {
-            const fabricImage = new fabric.Image(img);
+            const fabricImage = new fabric.Image(img, {
+              id: this.generateId(),
+              name: "Image",
+            });
             this.canvas.add(fabricImage);
             this.addLayer(fabricImage);
           };
@@ -206,6 +223,10 @@ export default {
         reader.readAsDataURL(file);
       };
       input.click();
+    },
+
+    generateId() {
+      return Math.random().toString(36).substr(2, 9); // Генерация случайного ID
     },
 
     addListeners(layer) {
@@ -230,9 +251,12 @@ export default {
     selectLayer(layer) {
       if (layer.object) {
         layer.selected = true;
-        // this.canvas.on('object:selected', console.log)
+        console.log(layer);
         this.canvas.setActiveObject(layer.object);
         this.canvas.renderAll();
+        event.preventDefault(); // Предотвращаем отображение стандартного контекстного меню браузера
+        this.contextMenuPosition = { top: event.clientY, left: event.clientX };
+        this.contextMenuVisible = true;
       }
     },
 
@@ -326,6 +350,15 @@ export default {
         this.canvas.requestRenderAll();
       }
     },
+
+    hideContextMenu() {
+      this.contextMenuVisible = false;
+    },
+    handleMenuItemClick(action) {
+      // Нужно добавить некоторые действия для элемента в панели Layers
+      console.log('Выполнено действие:', action);
+      this.hideContextMenu();
+    }
   },
 };
 </script>
@@ -363,5 +396,28 @@ canvas {
 select {
   max-height: 20px;
   margin-top: 22px;
+}
+
+.context-menu {
+  position: fixed;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px 0;
+  z-index: 1000; /* Убедитесь, что меню отображается поверх остального контента */
+}
+
+.context-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.context-menu li {
+  padding: 5px 20px;
+  cursor: pointer;
+}
+
+.context-menu li:hover {
+  background-color: #f0f0f0;
 }
 </style>
