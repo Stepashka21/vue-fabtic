@@ -17,22 +17,23 @@
 
       <div>
         <div class="buttunsGrid">
-          <button class="btns" @click="addRectangle">Квадрат</button>
-          <button class="btns" @click="addCircle">Кругг</button>
-          <button class="btns" @click="addImg">Картинка</button>
-          <button class="btns" @click="addText">Текст</button>
+          <button class="btnss" @click="addRectangle"> mdi-vector-square
+          </button>
+          <button class="btnss" @click="addCircle">Кругг</button>
+          <button class="btnss" @click="addImg">Картинка</button>
+          <button class="btnss" @click="addText">Текст</button>
           <select v-model="selectedFont" @change="applyFont">
             <option v-for="font in fonts" :key="font" :value="font">
               {{ font }}
             </option>
           </select>
 
-          <button class="btns" @click="saveProject">Сохранить</button>
-          <button class="btns" @click="saveCanvasAsImage">
+          <button class="btnss" @click="saveProject">Сохранить</button>
+          <button class="btnss" @click="saveCanvasAsImage">
             Сохранить как картинку
           </button>
-          <button class="btns" @click="deleteEl">Удалить элемент</button>
-          <button class="btns" @click="clearCanvas">Очистить холст</button>
+          <button class="btnss" @click="deleteEl">Удалить элемент</button>
+          <button class="btnss" @click="clearCanvas">Очистить холст</button>
         </div>
 
         <div class="canav">
@@ -49,7 +50,7 @@
       <ul>
         <li @click="handleMenuItemClick('edit')">Редактировать</li>
         <li @click="handleMenuItemClick('delete')">Удалить</li>
-        <!-- Добавьте другие пункты меню по вашему выбору -->
+        <!-- другие пункты меню -->
       </ul>
     </div>
   </div>
@@ -254,7 +255,7 @@ export default {
         console.log(layer);
         this.canvas.setActiveObject(layer.object);
         this.canvas.renderAll();
-        event.preventDefault(); // Предотвращаем отображение стандартного контекстного меню браузера
+        event.preventDefault(); // Убираем отображение стандартного контекстного меню браузера
         this.contextMenuPosition = { top: event.clientY, left: event.clientX };
         this.contextMenuVisible = true;
       }
@@ -355,10 +356,20 @@ export default {
       this.contextMenuVisible = false;
     },
     handleMenuItemClick(action) {
-      // Нужно добавить некоторые действия для элемента в панели Layers
+      if (action == 'edit') editNameLayer();
+      if (action == 'delete') deleteEl();
       console.log('Выполнено действие:', action);
       this.hideContextMenu();
-    }
+    },
+
+    editNameLayer() {
+      const activeObject = this.canvas.getActiveObject();
+      this.layers = this.layers.filter(
+        (layer) => layer.object !== activeObject
+      );
+      console.log(this.activeObject);
+    },
+
   },
 };
 </script>
@@ -366,7 +377,11 @@ export default {
 <style>
 body {
   display: flex;
-  background-color: white;
+  background-color: rgb(128, 128, 128);
+}
+svg{
+  height: 30px;
+  width: 30px;
 }
 .layer {
   cursor: pointer;
@@ -375,6 +390,12 @@ body {
 }
 .lay {
   margin-right: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+  border-radius: 14px;
 }
 
 canvas {
@@ -387,11 +408,19 @@ canvas {
   justify-content: space-between;
   max-width: 71vw;
   height: 50px;
+  background-color: black;
+  border-radius: 10px 10px 0 0;
 }
 
-.btns {
-  font-size: 16px;
-  max-width: fit-content;
+.btnss {
+  display: flex;
+  flex-direction: row;
+  width: 20vw;
+   /* margin: 20px 5px 5px 5px !important; */
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 6px;
+  height: 40px;
 }
 select {
   max-height: 20px;
