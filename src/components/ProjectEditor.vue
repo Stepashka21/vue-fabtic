@@ -4,6 +4,7 @@
       <div class="nameProj">
         <h2 class="headNameProj">{{ projectName }}</h2>
       </div>
+<<<<<<< HEAD
       <!-- <router-link :to="{ name: 'ReplaceDialog' }">Перейти на страницу Replace</router-link> -->
       <div class="divLayer">
         <div class="lay">
@@ -15,12 +16,35 @@
                 <!-- /{{ layer.selected ? "selected" : "deselected" }} -->
             </div>
           </draggable>
+=======
+
+      <div>
+        <div class="buttunsGrid">
+          <button class="btnss" @click="addRectangle"> mdi-vector-square
+          </button>
+          <button class="btnss" @click="addCircle">Кругг</button>
+          <button class="btnss" @click="addImg">Картинка</button>
+          <button class="btnss" @click="addText">Текст</button>
+          <select v-model="selectedFont" @change="applyFont">
+            <option v-for="font in fonts" :key="font" :value="font">
+              {{ font }}
+            </option>
+          </select>
+
+          <button class="btnss" @click="saveProject">Сохранить</button>
+          <button class="btnss" @click="saveCanvasAsImage">
+            Сохранить как картинку
+          </button>
+          <button class="btnss" @click="deleteEl">Удалить элемент</button>
+          <button class="btnss" @click="clearCanvas">Очистить холст</button>
+>>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
         </div>
       </div>
       <div class="settingsElement">
 
       </div>
     </div>
+<<<<<<< HEAD
 
     <div class="canvasPanel">
       <div class="buttunsGrid">
@@ -72,6 +96,14 @@
 
       </div>
 
+=======
+    <div class="context-menu" v-show="contextMenuVisible" :style="{ top: contextMenuPosition.top + 'px', left: contextMenuPosition.left + 'px' }">
+      <ul>
+        <li @click="handleMenuItemClick('edit')">Редактировать</li>
+        <li @click="handleMenuItemClick('delete')">Удалить</li>
+        <!-- другие пункты меню -->
+      </ul>
+>>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
     </div>
   </div>
 
@@ -109,6 +141,9 @@ export default {
         "Inconsolata",
       ],
       selectedFont: "Times New Roman",
+
+      contextMenuVisible: false,
+      contextMenuPosition: { top: 0, left: 0 }
     };
   },
 
@@ -190,7 +225,9 @@ export default {
       // console.log(ev)
     },
     addRectangle() {
-      const rect = new fabric.Rect({
+      const rect = new fabric.Rect({    
+        id: this.generateId(), // Генерация уникального ID
+        name: "Rectangle", // Указание имени
         width: 100,
         height: 100,
         fill: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
@@ -205,6 +242,8 @@ export default {
     },
     addCircle() {
       const circle = new fabric.Circle({
+        id: this.generateId(),
+        name: "Circle",
         radius: 50,
         fill: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
           Math.random() * 256
@@ -226,7 +265,10 @@ export default {
         reader.onload = (event) => {
           const img = new Image();
           img.onload = () => {
-            const fabricImage = new fabric.Image(img);
+            const fabricImage = new fabric.Image(img, {
+              id: this.generateId(),
+              name: "Image",
+            });
             this.canvas.add(fabricImage);
             this.addLayer(fabricImage);
           };
@@ -235,6 +277,10 @@ export default {
         reader.readAsDataURL(file);
       };
       input.click();
+    },
+
+    generateId() {
+      return Math.random().toString(36).substr(2, 9); // Генерация случайного ID
     },
 
     addListeners(layer) {
@@ -259,9 +305,12 @@ export default {
     selectLayer(layer) {
       if (layer.object) {
         layer.selected = true;
-        // this.canvas.on('object:selected', console.log)
+        console.log(layer);
         this.canvas.setActiveObject(layer.object);
         this.canvas.renderAll();
+        event.preventDefault(); // Убираем отображение стандартного контекстного меню браузера
+        this.contextMenuPosition = { top: event.clientY, left: event.clientX };
+        this.contextMenuVisible = true;
       }
     },
 
@@ -355,6 +404,25 @@ export default {
         this.canvas.requestRenderAll();
       }
     },
+
+    hideContextMenu() {
+      this.contextMenuVisible = false;
+    },
+    handleMenuItemClick(action) {
+      if (action == 'edit') editNameLayer();
+      if (action == 'delete') deleteEl();
+      console.log('Выполнено действие:', action);
+      this.hideContextMenu();
+    },
+
+    editNameLayer() {
+      const activeObject = this.canvas.getActiveObject();
+      this.layers = this.layers.filter(
+        (layer) => layer.object !== activeObject
+      );
+      console.log(this.activeObject);
+    },
+
   },
 };
 </script>
@@ -362,6 +430,7 @@ export default {
 <style>
 body {
   display: flex;
+<<<<<<< HEAD
   background-color: #464646;
   align-items: flex-start;
   justify-content: flex-start;
@@ -398,6 +467,13 @@ body {
   margin-top: 29px;
   border-radius: 12px;
   height: 60vh;
+=======
+  background-color: rgb(128, 128, 128);
+}
+svg{
+  height: 30px;
+  width: 30px;
+>>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
 }
 .layer {
   cursor: pointer;
@@ -410,6 +486,7 @@ body {
   flex-direction: row;
 }
 .lay {
+<<<<<<< HEAD
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -420,6 +497,15 @@ body {
   margin-top: 15px;
   background-color: #2C2C2C;
   border-radius: 12px;
+=======
+  margin-right: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background-color: white;
+  border-radius: 14px;
+>>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
 }
 
 
@@ -433,6 +519,7 @@ canvas {
 .buttunsGrid {
   display: flex;
   flex-direction: row;
+<<<<<<< HEAD
   justify-content: flex-start;
   width: 1280px;
   height: 32px;
@@ -445,6 +532,24 @@ canvas {
   font-size: 16px;
   max-width: fit-content;
   margin: 5px;
+=======
+  justify-content: space-between;
+  max-width: 71vw;
+  height: 50px;
+  background-color: black;
+  border-radius: 10px 10px 0 0;
+}
+
+.btnss {
+  display: flex;
+  flex-direction: row;
+  width: 20vw;
+   /* margin: 20px 5px 5px 5px !important; */
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 6px;
+  height: 40px;
+>>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
 }
 /* select {
   max-height: 20px;
@@ -473,5 +578,28 @@ canvas {
 }
 .textareaQuery {
   width: 39vw;
+}
+
+.context-menu {
+  position: fixed;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px 0;
+  z-index: 1000; /* Убедитесь, что меню отображается поверх остального контента */
+}
+
+.context-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.context-menu li {
+  padding: 5px 20px;
+  cursor: pointer;
+}
+
+.context-menu li:hover {
+  background-color: #f0f0f0;
 }
 </style>
