@@ -1,51 +1,80 @@
 <template>
-  <div>
-    <h1>Редактор проекта "{{ projectName }}"</h1>
-    <!-- <router-link :to="{ name: 'ReplaceDialog' }">Перейти на страницу Replace</router-link> -->
-    <div style="display: flex; flex-direction: row">
-      <div class="lay">
-        <h2>Layers</h2>
-        <draggable v-model="layers" @end="above">
-          <div v-for="(layer, index) in layers" :key="index">
-            <span @click="selectLayer(layer)" class="layer"
-              >{{ layer.name }} /
-              {{ layer.selected ? "selected" : "deselected" }}</span
-            >
-          </div>
-        </draggable>
+  <div style="display: flex; flex-direction: row; padding: 5px">
+    <div class="leftPanel">
+      <div class="nameProj">
+        <h2 class="headNameProj">{{ projectName }}</h2>
       </div>
-
-      <div>
-        <div class="buttunsGrid">
-          <button class="btns" @click="addRectangle">Квадрат</button>
-          <button class="btns" @click="addCircle">Кругг</button>
-          <button class="btns" @click="addImg">Картинка</button>
-          <button class="btns" @click="addText">Текст</button>
-          <select v-model="selectedFont" @change="applyFont">
-            <option v-for="font in fonts" :key="font" :value="font">
-              {{ font }}
-            </option>
-          </select>
-
-          <button class="btns" @click="saveProject">Сохранить</button>
-          <button class="btns" @click="saveCanvasAsImage">
-            Сохранить как картинку
-          </button>
-          <button class="btns" @click="deleteEl">Удалить элемент</button>
-          <button class="btns" @click="clearCanvas">Очистить холст</button>
+      <!-- <router-link :to="{ name: 'ReplaceDialog' }">Перейти на страницу Replace</router-link> -->
+      <div class="divLayer">
+        <div class="lay">
+          <h2 style="margin-top: 3px;">Слои</h2>
+          <draggable v-model="layers" @end="above" style="display: flex; flex-direction: column; align-items: flex-start; width: 11vw;">
+            <div v-for="(layer, index) in layers" :key="index" style="margin-bottom: 10px;">
+              <span @click="selectLayer(layer)" class="layer"
+                >{{ layer.name }} </span>
+                <!-- /{{ layer.selected ? "selected" : "deselected" }} -->
+            </div>
+          </draggable>
         </div>
+      </div>
+      <div class="settingsElement">
 
-        <div class="canav">
-          <canvas
-            ref="canvas"
-            width="1000"
-            height="600"
-            @click="deselectAll"
-          ></canvas>
-        </div>
       </div>
     </div>
+
+    <div class="canvasPanel">
+      <div class="buttunsGrid">
+        <button class="btns" @click="addRectangle">Квадрат</button>
+        <button class="btns" @click="addCircle">Кругг</button>
+        <button class="btns" @click="addImg">Картинка</button>
+        <button class="btns" @click="addText">Текст</button>
+        <!-- <select v-model="selectedFont" @change="applyFont">
+          <option v-for="font in fonts" :key="font" :value="font">
+            {{ font }}
+          </option>
+        </select> -->
+
+        <button class="btns" @click="saveProject">Сохранить</button>
+        <button class="btns" @click="saveCanvasAsImage">
+          Сохранить как картинку
+        </button>
+        <button class="btns" @click="deleteEl">Удалить элемент</button>
+        <button class="btns" @click="clearCanvas">Очистить холст</button>
+      </div>
+
+      <div class="canav">
+        <canvas
+          ref="canvas"
+          width="1280"
+          height="720"
+          @click="deselectAll"
+        ></canvas>
+      </div>
+
+      <div class="">
+        <div class="">
+          <div class="querySelectionPanel">
+            <div class="request" @click="requestWindow()">
+              <h3 class="queryPanel">Запрос на генерацию изображения</h3>
+            </div>
+            <div class="negativeRequest" @click="negativeRequestWindow()">
+              <h3 class="queryPanel">Негативный запрос</h3>
+            </div>
+          </div>
+          <div class="textareaQuery">
+            <textarea name="" id="" cols="30" rows="10">Введите текст...</textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="">
+
+      </div>
+
+    </div>
   </div>
+
 </template>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
@@ -333,17 +362,70 @@ export default {
 <style>
 body {
   display: flex;
-  background-color: white;
+  background-color: #464646;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.leftPanel {
+  margin: 8px 25px 8px 8px;
+  height: 96vh;
+  width: 12vw;
+}
+.nameProj {
+  background-color: #BCBCBC;
+  display: flex;
+  justify-content: center;
+  width: auto;
+  max-width: 190px;
+  height: 32px;
+  border-radius: 12px;
+  padding: 5px;
+  align-items: center;
+  
+}
+.headNameProj {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding: 0;
+}
+.divLayer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #2C2C2C;
+  margin-top: 29px;
+  border-radius: 12px;
+  height: 60vh;
 }
 .layer {
   cursor: pointer;
-  margin: 10px;
-  background-color: #b1b1b1;
+  background-color: #8F8F8F;
+  padding: 2px 5px 2px 5px;
+  color: #ffffff;
+  border-radius: 10px;
+  width: 10vw;
+  display: flex;
+  flex-direction: row;
 }
 .lay {
-  margin-right: 40px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.settingsElement {
+  height: 29vh;
+  margin-top: 15px;
+  background-color: #2C2C2C;
+  border-radius: 12px;
 }
 
+
+.canav {  
+  background-color: #ffffff;
+}
 canvas {
   border: 2px solid #000000;
 }
@@ -351,17 +433,45 @@ canvas {
 .buttunsGrid {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  max-width: 71vw;
-  height: 50px;
+  justify-content: flex-start;
+  width: 1280px;
+  height: 32px;
+  margin-top: 0px;
+  background-color: #2C2C2C;
+  border-radius: 8px 8px 0 0;
 }
 
 .btns {
   font-size: 16px;
   max-width: fit-content;
+  margin: 5px;
 }
-select {
+/* select {
   max-height: 20px;
-  margin-top: 22px;
+  margin-top: 6px;
+} */
+
+.querySelectionPanel {
+  width: 39vw;
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+.request {
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 12px;
+}
+.negativeRequest {
+  background-color: #000000;
+  color:  #ffffff;
+  border-radius: 12px;
+}
+.queryPanel {
+  padding: 0;
+  margin: 5px 16px;
+}
+.textareaQuery {
+  width: 39vw;
 }
 </style>

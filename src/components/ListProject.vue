@@ -24,7 +24,7 @@
         v-model="newProjectName"
         placeholder="Введите название проекта"
       />
-      <div class="btns">
+      <div class="btnss">
         <button class="closeDialog" @click="closeDialog()">Отмена</button>
         <button @click="createProject">Создать проект</button>
       </div>
@@ -197,7 +197,7 @@ button:hover {
   width: 94%;
   height: 3vh;
 }
-.btns {
+.btnss {
   display: flex;
   flex-direction: row;
   width: 20vw;
