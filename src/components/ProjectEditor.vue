@@ -4,66 +4,53 @@
       <div class="nameProj">
         <h2 class="headNameProj">{{ projectName }}</h2>
       </div>
-<<<<<<< HEAD
       <!-- <router-link :to="{ name: 'ReplaceDialog' }">Перейти на страницу Replace</router-link> -->
       <div class="divLayer">
         <div class="lay">
-          <h2 style="margin-top: 3px;">Слои</h2>
-          <draggable v-model="layers" @end="above" style="display: flex; flex-direction: column; align-items: flex-start; width: 11vw;">
-            <div v-for="(layer, index) in layers" :key="index" style="margin-bottom: 10px;">
+          <h2 style="margin-top: 3px">Слои</h2>
+          <draggable
+            v-model="layers"
+            @end="above"
+            style="
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+              width: 11vw;
+            "
+          >
+            <div
+              v-for="(layer, index) in layers"
+              :key="index"
+              style="margin-bottom: 10px"
+            >
               <span @click="selectLayer(layer)" class="layer"
-                >{{ layer.name }} </span>
-                <!-- /{{ layer.selected ? "selected" : "deselected" }} -->
+                >{{ layer.name }}
+              </span>
+              <!-- /{{ layer.selected ? "selected" : "deselected" }} -->
             </div>
           </draggable>
-=======
-
-      <div>
-        <div class="buttunsGrid">
-          <button class="btnss" @click="addRectangle"> mdi-vector-square
-          </button>
-          <button class="btnss" @click="addCircle">Кругг</button>
-          <button class="btnss" @click="addImg">Картинка</button>
-          <button class="btnss" @click="addText">Текст</button>
-          <select v-model="selectedFont" @change="applyFont">
-            <option v-for="font in fonts" :key="font" :value="font">
-              {{ font }}
-            </option>
-          </select>
-
-          <button class="btnss" @click="saveProject">Сохранить</button>
-          <button class="btnss" @click="saveCanvasAsImage">
-            Сохранить как картинку
-          </button>
-          <button class="btnss" @click="deleteEl">Удалить элемент</button>
-          <button class="btnss" @click="clearCanvas">Очистить холст</button>
->>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
         </div>
       </div>
-      <div class="settingsElement">
-
-      </div>
     </div>
-<<<<<<< HEAD
 
     <div class="canvasPanel">
       <div class="buttunsGrid">
-        <button class="btns" @click="addRectangle">Квадрат</button>
-        <button class="btns" @click="addCircle">Кругг</button>
-        <button class="btns" @click="addImg">Картинка</button>
-        <button class="btns" @click="addText">Текст</button>
+        <button class="btnss" @click="addRectangle">Квадрат</button>
+        <button class="btnss" @click="addCircle">Кругг</button>
+        <button class="btnss" @click="addImg">Картинка</button>
+        <button class="btnss" @click="addText">Текст</button>
         <!-- <select v-model="selectedFont" @change="applyFont">
           <option v-for="font in fonts" :key="font" :value="font">
             {{ font }}
           </option>
         </select> -->
 
-        <button class="btns" @click="saveProject">Сохранить</button>
-        <button class="btns" @click="saveCanvasAsImage">
+        <button class="btnss" @click="saveProject">Сохранить</button>
+        <button class="btnss" @click="saveCanvasAsImage">
           Сохранить как картинку
         </button>
-        <button class="btns" @click="deleteEl">Удалить элемент</button>
-        <button class="btns" @click="clearCanvas">Очистить холст</button>
+        <button class="btnss" @click="deleteEl">Удалить элемент</button>
+        <button class="btnss" @click="clearCanvas">Очистить холст</button>
       </div>
 
       <div class="canav">
@@ -86,27 +73,30 @@
             </div>
           </div>
           <div class="textareaQuery">
-            <textarea name="" id="" cols="30" rows="10">Введите текст...</textarea>
+            <textarea name="" id="" cols="30" rows="10">Введите текст...</textarea
+            >
           </div>
         </div>
-
       </div>
 
-      <div class="">
+      <div class=""></div>
 
+      <div
+        class="context-menu"
+        v-show="contextMenuVisible"
+        :style="{
+          top: contextMenuPosition.top + 'px',
+          left: contextMenuPosition.left + 'px',
+        }"
+      >
+        <ul>
+          <li @click="handleMenuItemClick('edit')">Редактировать</li>
+          <li @click="handleMenuItemClick('delete')">Удалить</li>
+          <!-- другие пункты меню -->
+        </ul>
       </div>
-
-=======
-    <div class="context-menu" v-show="contextMenuVisible" :style="{ top: contextMenuPosition.top + 'px', left: contextMenuPosition.left + 'px' }">
-      <ul>
-        <li @click="handleMenuItemClick('edit')">Редактировать</li>
-        <li @click="handleMenuItemClick('delete')">Удалить</li>
-        <!-- другие пункты меню -->
-      </ul>
->>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
     </div>
   </div>
-
 </template>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
@@ -143,7 +133,7 @@ export default {
       selectedFont: "Times New Roman",
 
       contextMenuVisible: false,
-      contextMenuPosition: { top: 0, left: 0 }
+      contextMenuPosition: { top: 0, left: 0 },
     };
   },
 
@@ -225,7 +215,7 @@ export default {
       // console.log(ev)
     },
     addRectangle() {
-      const rect = new fabric.Rect({    
+      const rect = new fabric.Rect({
         id: this.generateId(), // Генерация уникального ID
         name: "Rectangle", // Указание имени
         width: 100,
@@ -409,9 +399,9 @@ export default {
       this.contextMenuVisible = false;
     },
     handleMenuItemClick(action) {
-      if (action == 'edit') editNameLayer();
-      if (action == 'delete') deleteEl();
-      console.log('Выполнено действие:', action);
+      if (action == "edit") editNameLayer();
+      if (action == "delete") deleteEl();
+      console.log("Выполнено действие:", action);
       this.hideContextMenu();
     },
 
@@ -422,7 +412,6 @@ export default {
       );
       console.log(this.activeObject);
     },
-
   },
 };
 </script>
@@ -430,7 +419,6 @@ export default {
 <style>
 body {
   display: flex;
-<<<<<<< HEAD
   background-color: #464646;
   align-items: flex-start;
   justify-content: flex-start;
@@ -441,7 +429,7 @@ body {
   width: 12vw;
 }
 .nameProj {
-  background-color: #BCBCBC;
+  background-color: #bcbcbc;
   display: flex;
   justify-content: center;
   width: auto;
@@ -450,7 +438,6 @@ body {
   border-radius: 12px;
   padding: 5px;
   align-items: center;
-  
 }
 .headNameProj {
   overflow: hidden;
@@ -463,21 +450,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #2C2C2C;
+  background-color: #2c2c2c;
   margin-top: 29px;
   border-radius: 12px;
   height: 60vh;
-=======
-  background-color: rgb(128, 128, 128);
-}
-svg{
-  height: 30px;
-  width: 30px;
->>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
 }
 .layer {
   cursor: pointer;
-  background-color: #8F8F8F;
+  background-color: #8f8f8f;
   padding: 2px 5px 2px 5px;
   color: #ffffff;
   border-radius: 10px;
@@ -486,7 +466,6 @@ svg{
   flex-direction: row;
 }
 .lay {
-<<<<<<< HEAD
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -495,21 +474,10 @@ svg{
 .settingsElement {
   height: 29vh;
   margin-top: 15px;
-  background-color: #2C2C2C;
+  background-color: #2c2c2c;
   border-radius: 12px;
-=======
-  margin-right: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  background-color: white;
-  border-radius: 14px;
->>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
 }
-
-
-.canav {  
+.canav {
   background-color: #ffffff;
 }
 canvas {
@@ -519,37 +487,22 @@ canvas {
 .buttunsGrid {
   display: flex;
   flex-direction: row;
-<<<<<<< HEAD
   justify-content: flex-start;
   width: 1280px;
   height: 32px;
   margin-top: 0px;
-  background-color: #2C2C2C;
+  background-color: #2c2c2c;
   border-radius: 8px 8px 0 0;
 }
-
-.btns {
+.btnss {
   font-size: 16px;
   max-width: fit-content;
   margin: 5px;
-=======
   justify-content: space-between;
   max-width: 71vw;
   height: 50px;
-  background-color: black;
+  /* background-color: black; */
   border-radius: 10px 10px 0 0;
-}
-
-.btnss {
-  display: flex;
-  flex-direction: row;
-  width: 20vw;
-   /* margin: 20px 5px 5px 5px !important; */
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 6px;
-  height: 40px;
->>>>>>> e205ff2e59eb4c2f67008c8b74277f9f2400e44c
 }
 /* select {
   max-height: 20px;
@@ -569,7 +522,7 @@ canvas {
 }
 .negativeRequest {
   background-color: #000000;
-  color:  #ffffff;
+  color: #ffffff;
   border-radius: 12px;
 }
 .queryPanel {
