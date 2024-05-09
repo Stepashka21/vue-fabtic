@@ -31,6 +31,9 @@
           </draggable>
         </div>
       </div>
+      <div>
+        <div class="settingsElement"></div>
+      </div>
     </div>
 
     <div class="canvasPanel">
@@ -62,8 +65,8 @@
         ></canvas>
       </div>
 
-      <div class="">
-        <div class="">
+      <div class="" style="display: flex; flex-direction: row;">
+        <div class="" style="margin-right: 20px;">
           <div class="querySelectionPanel">
             <div class="request" @click="requestWindow()">
               <h3 class="queryPanel">Запрос на генерацию изображения</h3>
@@ -75,6 +78,13 @@
           <div class="textareaQuery">
             <textarea name="" id="" cols="30" rows="10">Введите текст...</textarea
             >
+          </div>
+        </div>
+        <div class="rigthSettingAndPhoto" style="">
+          <button class="btnsSetting" @click="openDialog">
+            <h3>Дополнительно</h3>
+          </button>
+          <div class="rigthPhoto">
           </div>
         </div>
       </div>
@@ -96,6 +106,10 @@
         </ul>
       </div>
     </div>
+    <dialog ref="diaOptions" class="dialogNew" >
+        <h1>Дополнительные настройки</h1>
+        <button class="closeDialog" @click="closeDialog()">Вернуться</button>
+      </dialog>
   </div>
 </template>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
@@ -180,6 +194,16 @@ export default {
         .catch((error) => {
           console.error("Ошибка загрузки проекта:", error);
         });
+    },
+
+    
+    openDialog() {
+      this.$refs.diaOptions.style.visibility = "visible";
+      this.$refs.diaOptions.showModal();
+    },
+    closeDialog() {
+      this.$refs.diaOptions.style.visibility = "hidden";
+      this.$refs.diaOptions.close();
     },
 
     // Восстанавливаем состояние холста из данных проекта
@@ -422,6 +446,8 @@ body {
   background-color: #464646;
   align-items: flex-start;
   justify-content: flex-start;
+  margin: 0;
+
 }
 .leftPanel {
   margin: 8px 25px 8px 8px;
@@ -478,6 +504,8 @@ body {
   border-radius: 12px;
 }
 .canav {
+  width: 1280px;
+  height: 720px;
   background-color: #ffffff;
 }
 canvas {
@@ -496,13 +524,10 @@ canvas {
 }
 .btnss {
   font-size: 16px;
-  max-width: fit-content;
-  margin: 5px;
   justify-content: space-between;
   max-width: 71vw;
-  height: 50px;
-  /* background-color: black; */
-  border-radius: 10px 10px 0 0;
+  margin: 3px 5px 5px 5px !important;
+  border-radius: 8px;
 }
 /* select {
   max-height: 20px;
@@ -510,7 +535,7 @@ canvas {
 } */
 
 .querySelectionPanel {
-  width: 39vw;
+  width: 40vw;
   display: flex;
   justify-content: space-between;
   margin: 8px 0;
@@ -532,6 +557,30 @@ canvas {
 .textareaQuery {
   width: 39vw;
 }
+.rigthSettingAndPhoto {
+  /* width: 46vw; */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.btnsSetting {
+  margin-top: 8px;
+  width: 200px;
+  height: 35px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rigthPhoto {
+  width: 26vw;
+  background-color: #ffffff;
+  border-radius: 12px;
+  height: 16vh;
+  margin-top: 10px;
+}
+
 
 .context-menu {
   position: fixed;
@@ -554,5 +603,14 @@ canvas {
 
 .context-menu li:hover {
   background-color: #f0f0f0;
+}
+
+.dialogNew {
+  border: none;
+  display: flex;
+  border-radius: 20px;
+  flex-direction: column;
+  align-items: center;
+  visibility: hidden;
 }
 </style>
