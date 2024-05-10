@@ -81,20 +81,13 @@
 
       <div class=""></div>
 
-      <div
-        class="context-menu"
-        v-show="contextMenuVisible"
-        :style="{
-          top: contextMenuPosition.top + 'px',
-          left: contextMenuPosition.left + 'px',
-        }"
-      >
+      <!-- <div class="context-menu" v-show="contextMenuVisible"      >
         <ul>
           <li @click="handleMenuItemClick('edit')">Редактировать</li>
           <li @click="handleMenuItemClick('delete')">Удалить</li>
-          <!-- другие пункты меню -->
+         
         </ul>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -258,6 +251,7 @@ export default {
             const fabricImage = new fabric.Image(img, {
               id: this.generateId(),
               name: "Image",
+              type: "img"
             });
             this.canvas.add(fabricImage);
             this.addLayer(fabricImage);
@@ -300,7 +294,7 @@ export default {
         this.canvas.renderAll();
         event.preventDefault(); // Убираем отображение стандартного контекстного меню браузера
         this.contextMenuPosition = { top: event.clientY, left: event.clientX };
-        this.contextMenuVisible = true;
+        // this.contextMenuVisible = true;
       }
     },
 
@@ -420,8 +414,8 @@ export default {
 body {
   display: flex;
   background-color: #464646;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
 }
 .leftPanel {
   margin: 8px 25px 8px 8px;
@@ -496,13 +490,11 @@ canvas {
 }
 .btnss {
   font-size: 16px;
-  max-width: fit-content;
   margin: 5px;
   justify-content: space-between;
   max-width: 71vw;
-  height: 50px;
-  /* background-color: black; */
-  border-radius: 10px 10px 0 0;
+  height: 25px;
+  border-radius: 10px;
 }
 /* select {
   max-height: 20px;

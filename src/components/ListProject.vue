@@ -8,7 +8,8 @@
         <div v-for="project in projects" :key="project.id">
           <button class="list-item" @click="navigateToProject(project)">
             <router-link
-              :to="{ name: 'edit', params: { projectName: project.name } }"
+              :to="{ name: 'edit', params: { projectName: project.name } }" 
+              style=" text-decoration: none; color: #ffffff;"
               >{{ project.name }}</router-link
             >
           </button>
@@ -17,16 +18,21 @@
     </div>
 
     <dialog ref="diaOptions" class="dialogNew" style="">
-      <h1>Создание нового проекта</h1>
+      <h3 style="color: #ffffff;">Введите название проекта</h3>
       <input
         class="inputs"
         type="text"
         v-model="newProjectName"
-        placeholder="Введите название проекта"
+        placeholder="Название..."
+        
       />
-      <div class="btnss">
-        <button class="closeDialog" @click="closeDialog()">Отмена</button>
-        <button @click="createProject">Создать проект</button>
+      <div class="btnsDialog">
+        <button class="closeDialog" @click="closeDialog()">
+          <h4 style="margin: 0; padding: 0;">Отмена</h4>
+        </button>
+        <button class="saveProj" @click="createProject">
+          <h4 style="margin: 0; padding: 0;">Создать проект</h4>
+        </button>
       </div>
     </dialog>
   </div>
@@ -135,8 +141,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 99vw;
-  height: 98vh;
+  width: 95vw;
+  height: 90vh;
   background-color: black;
 }
 
@@ -173,17 +179,23 @@ body {
   list-style-type: none;
   border: none;
 }
+.list-item:hover {
+  background-color: #464646b4;
+  cursor: pointer;
+}
+
 .showDialog {
   height: 8vh;
   border-radius: 12px;
   margin: 8px 0;
   padding: 0 59px;
-  background-color: #2f00ffa8;
+  background-color: #006ae3d3;
   color: #ffffff;
   border: none;
 }
-button:hover {
-  cursor: pointer;
+.showDialog:hover {
+  cursor: pointer;  
+  background-color: #005eca;
 }
 .dialogNew {
   border: none;
@@ -192,17 +204,41 @@ button:hover {
   flex-direction: column;
   align-items: center;
   visibility: hidden;
+  background-color: #646464;
+  height: 240px;
+  width: 400px;
 }
 .inputs {
-  width: 94%;
-  height: 3vh;
+  width: 304px;
+  height: 40px;
+  margin-top: 40px;
+  margin-bottom: 27px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
 }
-.btnss {
+.btnsDialog {
   display: flex;
   flex-direction: row;
-  width: 20vw;
+  width: 386px;
   margin: 20px 5px 5px 5px !important;
   justify-content: space-between;
+}
+.closeDialog {
+  background-color: #F04444;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  height: 34px;
+  width: 172px;
+}
+.saveProj {
+  background-color: #39B400;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  height: 34px;
+  width: 172px;
 }
 
 </style>
