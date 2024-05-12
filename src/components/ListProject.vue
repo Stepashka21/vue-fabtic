@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bodyList">
     <div class="content">
       <button class="showDialog" @click="openDialog">
         Создать новый проект
@@ -137,13 +137,13 @@ export default {
 </script>
 
 <style>
-body {
+.bodyList {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 95vw;
   height: 90vh;
-  background-color: black;
+  background-color: #A7A7A7;
 }
 
 .content {
@@ -153,7 +153,7 @@ body {
   flex-direction: column;
   margin: 20px auto;
   padding: 10px;
-  background-color: white;
+  background-color: #A7A7A7;
   border-radius: 20px;
   max-width: 70vw;
   max-height: 70vh;
