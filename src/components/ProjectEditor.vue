@@ -31,29 +31,72 @@
           </draggable>
         </div>
       </div>
-      <div>
-        <div class="settingsElement"></div>
-      </div>
     </div>
 
     <div class="canvasPanel">
       <div class="buttunsGrid">
-        <button class="btnss" @click="addRectangle">Квадрат</button>
-        <button class="btnss" @click="addCircle">Кругг</button>
-        <button class="btnss" @click="addImg">Картинка</button>
-        <button class="btnss" @click="addText">Текст</button>
+        <div class="listBtn">
+          <button class="btnss" @click="viewFigure">
+            <img class="imgIcons" :src="require('/src/assets/kursor.png')" />
+          </button>
+        </div>
+
+        <div class="listBtn">
+          <button class="btnss" @click="viewFigure">
+            <img class="imgIcons" :src="require('/src/assets/layers.png')" />
+          </button>
+        </div>
+
+        <div class="listBtn">
+          <button class="btnss" @click="addText">
+            <img class="imgIcons" :src="require('/src/assets/text.png')" />
+            <!--Text-->
+          </button>
+        </div>
+
+        <div class="listBtn">
+          <button class="btnss" @click="viewFigure">
+            <img class="imgIcons" :src="require('/src/assets/geometry.png')" />
+          </button>
+        </div>
+
+        <div class="listBtn">
+          <button class="btnss" @click="viewFigure">
+            <img class="imgIcons" :src="require('/src/assets/pen.png')" />
+          </button>
+        </div>
+
+        <div class="listBtn">
+          <button class="btnss" @click="viewFigure">
+            <img class="imgIcons" :src="require('/src/assets/img.png')" />
+          </button>
+        </div>
+
+        <div v-if="showFigureMenu" class="additionalMenu">
+          <button class="btnss" @click="addRectangle">
+            <img class="imgIcons" :src="require('/src/assets/rect.png')" />
+            <span style="color: #ffffff">Квадрат</span>
+            <!--квадрат/прямоугольник-->
+          </button>
+          <button class="btnss" @click="addCircle">
+            <img class="imgIcons" :src="require('/src/assets/circle.png')" />
+            <span style="color: #ffffff">Круг</span>
+            <!--круг-->
+          </button>
+        </div>
+
+        <button class="btnss" @click="addImg">
+          <img class="btnIcon" src="" />
+          <!--добавить картинку-->
+        </button>
+
         <!-- <select v-model="selectedFont" @change="applyFont">
           <option v-for="font in fonts" :key="font" :value="font">
             {{ font }}
           </option>
         </select> -->
 
-        <button class="btnss" @click="saveProject">Сохранить</button>
-        <button class="btnss" @click="saveCanvasAsImage">
-          Сохранить как картинку
-        </button>
-        <button class="btnss" @click="deleteEl">Удалить элемент</button>
-        <button class="btnss" @click="clearCanvas">Очистить холст</button>
+        <!--нужно добавить ластик-->
       </div>
 
       <div class="canav">
@@ -65,8 +108,8 @@
         ></canvas>
       </div>
 
-      <div class="" style="display: flex; flex-direction: row;">
-        <div class="" style="margin-right: 20px;">
+      <div class="" style="display: flex; flex-direction: row">
+        <div class="" style="margin-right: 20px">
           <div class="querySelectionPanel">
             <div class="request" @click="requestWindow()">
               <h3 class="queryPanel">Запрос на генерацию изображения</h3>
@@ -76,16 +119,14 @@
             </div>
           </div>
           <div class="textareaQuery">
-            <textarea name="" id="" cols="30" rows="10">Введите текст...</textarea
-            >
+            <textarea class="textAr" id="" cols="30" rows="10">Введите текст...</textarea>
           </div>
         </div>
         <div class="rigthSettingAndPhoto" style="">
           <button class="btnsSetting" @click="openDialog">
             <h3>Дополнительно</h3>
           </button>
-          <div class="rigthPhoto">
-          </div>
+          <div class="rigthPhoto"></div>
         </div>
       </div>
 
@@ -99,10 +140,35 @@
         </ul>
       </div> -->
     </div>
-    <dialog ref="diaOptions" class="dialogNew" >
-        <h1>Дополнительные настройки</h1>
-        <button class="closeDialog" @click="closeDialog()">Вернуться</button>
-      </dialog>
+
+    <div class="rightPanel">
+      <div class="elementSeting">
+        <h2>Настройки элемента</h2>
+        <p>Выбранный элемент:</p>
+        <template v-if="layer">
+          <div>
+            <p>Выбранный элемент: {{ layer }}</p>
+            <!-- Здесь можете добавить другие настройки для выбранного элемента -->
+          </div>
+        </template>
+
+      </div>
+        <button class="btnss" @click="saveProject"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить</p></button>
+          <!-- <span style="color: #ffffff">Сохранить</span> -->
+        
+        <button class="btnss" @click="saveCanvasAsImage"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить как картинку</p></button>
+          <!-- <span style="color: #ffffff">Сохранить как картинку</span> -->
+        <button class="btnss" @click="deleteEl"><p style="color: #ffffff; padding: 0; margin: 0">Удалить элемент</p></button>
+          <!-- <span style="color: #ffffff">Удалить элемент</span> -->
+        <button class="btnss" @click="clearCanvas"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить</p></button>
+          <!-- <span style="color: #ffffff">Очистить холст</span> -->
+        <!-- </button> -->
+      </div>
+
+    <dialog ref="diaOptions" class="dialogNew">
+      <h1>Дополнительные настройки</h1>
+      <button class="closeDialog" @click="closeDialog()">Вернуться</button>
+    </dialog>
   </div>
 </template>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
@@ -122,13 +188,15 @@ export default {
   data() {
     return {
       canvas: null,
-
+      dataValue: "",
       projectName: "",
       projectFilePath: "",
       projectData: null,
 
       layers: [],
       selectedLayer: null,
+      selectLay: null,
+      showFigureMenu: false,
 
       fonts: [
         "Times New Roman",
@@ -141,6 +209,13 @@ export default {
 
       contextMenuVisible: false,
       contextMenuPosition: { top: 0, left: 0 },
+
+      // rangeInputs: [
+      //   { id: "range1", min: 0, max: 100 },
+      //   { id: "range2", min: 0, max: 100 },
+      // ],
+      // numberInput: 0,
+      // isRTL: document.documentElement.dir === "rtl",
     };
   },
 
@@ -152,14 +227,20 @@ export default {
     // this.initializeCanvas();
     this.canvas.on("selection:created", (e) => {
       const activeObject = e.target;
-      const selectedLayer = this.layers.find(
+      this.selectedLayer = this.layers.find(
         (layer) => layer.object === activeObject
       );
-      if (selectedLayer) {
-        selectedLayer.selected = true;
+      if (this.selectedLayer) {
+        this.selectedLayer.selected = true;
       }
     });
   },
+
+  // computed: {
+  //   selectedLayer() {
+  //     return this.layers.find(layer => layer.selected);
+  //   }
+  // },
 
   methods: {
     // Подгрузка проекта
@@ -167,7 +248,7 @@ export default {
       // Получаем имя проекта из параметров маршрута
       this.projectName = this.$route.params.projectName;
       // Формируем путь к файлу проекта
-      this.projectFilePath = `projects/${this.projectName}.json`;
+      this.projectFilePath = `C:/Users/Stoypik/Downloads/${this.projectName}.json`;
 
       // Загружаем файл проекта с помощью fetch
       fetch(this.projectFilePath)
@@ -180,6 +261,7 @@ export default {
         .then((data) => {
           // Сохраняем данные проекта
           console.log(data);
+          console.log("fetch");
           this.projectData = data;
           // Восстанавливаем состояние холста и слои из данных проекта
           this.restoreCanvasState();
@@ -189,7 +271,11 @@ export default {
         });
     },
 
-    
+    viewFigure() {
+      this.showFigureMenu = !this.showFigureMenu;
+      console.log("viewFigure");
+    },
+
     openDialog() {
       this.$refs.diaOptions.style.visibility = "visible";
       this.$refs.diaOptions.showModal();
@@ -244,8 +330,10 @@ export default {
         top: 10,
         selectable: true,
       });
+      console.log(rect.type);
       this.canvas.add(rect);
       this.addLayer(rect);
+      this.viewFigure();
     },
     addCircle() {
       const circle = new fabric.Circle({
@@ -259,8 +347,10 @@ export default {
         top: 50,
         selectable: true,
       });
+      console.log(circle.type);
       this.canvas.add(circle);
       this.addLayer(circle);
+      this.viewFigure();
     },
     addImg() {
       const input = document.createElement("input");
@@ -275,8 +365,9 @@ export default {
             const fabricImage = new fabric.Image(img, {
               id: this.generateId(),
               name: "Image",
-              type: "img"
+              // type: "img",
             });
+            console.log(fabricImage.type);
             this.canvas.add(fabricImage);
             this.addLayer(fabricImage);
           };
@@ -285,6 +376,7 @@ export default {
         reader.readAsDataURL(file);
       };
       input.click();
+      this.viewFigure();
     },
 
     generateId() {
@@ -313,12 +405,11 @@ export default {
     selectLayer(layer) {
       if (layer.object) {
         layer.selected = true;
-        console.log(layer);
+        console.log(layer.object.type);
         this.canvas.setActiveObject(layer.object);
         this.canvas.renderAll();
         event.preventDefault(); // Убираем отображение стандартного контекстного меню браузера
         this.contextMenuPosition = { top: event.clientY, left: event.clientX };
-        // this.contextMenuVisible = true;
       }
     },
 
@@ -390,7 +481,7 @@ export default {
     },
 
     addText() {
-      const text = new fabric.Textbox("Lorum ipsum dolor sit amet", {
+      const text = new fabric.Textbox("", {
         left: 50,
         top: 50,
         width: 150,
@@ -400,6 +491,7 @@ export default {
         fontSize: 20,
         fontFamily: this.selectedFont, // применяем выбранный шрифт
       });
+      console.log(text.type);
       this.canvas.add(text);
       this.addLayer(text);
     },
@@ -425,24 +517,23 @@ export default {
 
     editNameLayer() {
       const activeObject = this.canvas.getActiveObject();
-      this.layers = this.layers.filter(
-        (layer) => layer.object !== activeObject
-      );
-      console.log(this.activeObject);
+      if (activeObject && activeObject.type === "textbox") {
+        const text = prompt("Введите новое имя:", activeObject.text);
+        if (text) {
+          activeObject.set("text", text);
+          this.canvas.requestRenderAll();
+        }
+      }
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 body {
   display: flex;
-  background-color: #464646;
-  align-items: center;
-  justify-content: center;
-  align-items: flex-start;
+  background-color: #a7a7a7;
   justify-content: flex-start;
-
 }
 .leftPanel {
   margin: 8px 25px 8px 8px;
@@ -474,7 +565,7 @@ body {
   background-color: #2c2c2c;
   margin-top: 29px;
   border-radius: 12px;
-  height: 60vh;
+  height: 89vh;
 }
 .layer {
   cursor: pointer;
@@ -512,7 +603,7 @@ canvas {
   flex-direction: row;
   justify-content: flex-start;
   width: 1280px;
-  height: 32px;
+  height: 34px;  
   margin-top: 0px;
   background-color: #2c2c2c;
   border-radius: 8px 8px 0 0;
@@ -521,10 +612,21 @@ canvas {
   font-size: 16px;
   margin: 5px;
   justify-content: space-between;
-  max-width: 71vw;
   height: 25px;
   border-radius: 10px;
+  border: none;
+  border-inline: none;
+  background-color: #2c2c2c;
 }
+.btnss:hover {
+  cursor: pointer;
+  background-color:#0c8ce9;
+}
+
+
+/* .listBtn {
+  background-color: #0c8ce9;
+} */
 /* select {
   max-height: 20px;
   margin-top: 6px;
@@ -552,6 +654,21 @@ canvas {
 }
 .textareaQuery {
   width: 39vw;
+  background-color: #ffffff;
+  border-radius: 12px;
+}
+.textAr {
+  padding-left: 7px;
+  border: none;
+  border-inline: none;
+  border-radius: 12px;
+  resize: none;
+  width: -webkit-fill-available;
+  margin: 3px;
+}
+textarea:active {
+  border: none;
+  border-inline: none;
 }
 .rigthSettingAndPhoto {
   /* width: 46vw; */
@@ -576,7 +693,6 @@ canvas {
   height: 16vh;
   margin-top: 10px;
 }
-
 
 .context-menu {
   position: fixed;
@@ -609,4 +725,31 @@ canvas {
   align-items: center;
   visibility: hidden;
 }
+
+.additionalMenu {
+  display: flex;
+  position: absolute;
+  background-color: #2c2c2c;
+  border-radius: 10px;
+  margin: 33px 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.imgIcons {
+  width: 20px;
+}
+
+.rightPanel {
+  width: auto;
+  height: auto;
+}
+
+.elementSeting {
+  background-color: #bbb;
+}
+
 </style>
+

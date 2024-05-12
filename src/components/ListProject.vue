@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="bodyList">
     <div class="content">
       <button class="showDialog" @click="openDialog">
-        Создать новый проект
+        Создать проект
       </button>
       <div class="list-group-project">
         <div v-for="project in projects" :key="project.id">
@@ -31,7 +31,7 @@
           <h4 style="margin: 0; padding: 0;">Отмена</h4>
         </button>
         <button class="saveProj" @click="createProject">
-          <h4 style="margin: 0; padding: 0;">Создать проект</h4>
+          <h4 style="margin: 0; padding: 0;">Создать</h4>
         </button>
       </div>
     </dialog>
@@ -64,7 +64,7 @@ export default {
     },
 
     async loadProjects() {
-      const files = require.context("../../public/projects/", false, /.json$/);
+      const files = require.context("C:/Users/Stoypik/Downloads/", false, /.json$/);
       const projects = files.keys().map((filePath) => {
         const parts = filePath.split("/");
         const fileName = parts[parts.length - 1];
@@ -137,13 +137,13 @@ export default {
 </script>
 
 <style>
-body {
+.bodyList {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 95vw;
   height: 90vh;
-  background-color: black;
+  background-color: #A7A7A7;
 }
 
 .content {
@@ -153,7 +153,7 @@ body {
   flex-direction: column;
   margin: 20px auto;
   padding: 10px;
-  background-color: white;
+  background-color: #A7A7A7;
   border-radius: 20px;
   max-width: 70vw;
   max-height: 70vh;
