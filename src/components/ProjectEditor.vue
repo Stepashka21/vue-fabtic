@@ -121,7 +121,6 @@
 
     <dialog ref="diaOptions" class="dialogNew" >
       <h1>Дополнительные настройки</h1>
-      <input-range></input-range>
       <button class="closeDialog" @click="closeDialog()">Вернуться</button>
     </dialog>
   </div>
@@ -132,14 +131,11 @@
 <script>
 import { fabric } from "fabric";
 import draggable from "vuedraggable";
-import InputRange from './InputRange.vue';
-
 export default {
   name: "ProjectEditor",
 
   components: {
     draggable,
-    InputRange,
   },
 
   data() {
@@ -164,13 +160,6 @@ export default {
 
       contextMenuVisible: false,
       contextMenuPosition: { top: 0, left: 0 },
-
-      rangeInputs: [
-        { id: 'range1', min: 0, max: 100 },
-        { id: 'range2', min: 0, max: 100 }
-      ],
-      numberInput: 0,
-      isRTL: document.documentElement.dir === 'rtl'
     };
   },
 
@@ -243,8 +232,8 @@ export default {
             console.log(layerData);
             // Создаем объект слоя на основе данных из файла JSON
             const object = this.canvas.item(layerData.index);
-            object.type = layerData.name;
-            object.selected = false;
+            // object.type = layerData.name;
+            // object.selected = false;
             if (object) {
               // Добавляем объект на холст и в список слоев
               this.addLayer(object);
@@ -447,8 +436,8 @@ export default {
       this.contextMenuVisible = false;
     },
     handleMenuItemClick(action) {
-      if (action == "edit") editNameLayer();
-      if (action == "delete") deleteEl();
+      if (action == "edit") this.editNameLayer();
+      if (action == "delete") this.deleteEl();
       console.log("Выполнено действие:", action);
       this.hideContextMenu();
     },
@@ -465,100 +454,6 @@ export default {
 </script>
 
 <style>
-
-input,
-output {
-  display: inline-block;
-  vertical-align: middle;
-  font-size: 1em;
-  font-family: Arial, sans-serif;
-}
-
-output {
-  background: #ff4500;
-  padding: 5px 16px;
-  border-radius: 3px;
-  color: #fff;
-}
-
-input[type="number"] {
-  width: 40px;
-  padding: 4px 5px;
-  border: 1px solid #bbb;
-  border-radius: 3px;
-}
-
-/* input[type="range"]:focus,
-input[type="number"]:focus {
-  box-shadow: 0 0 3px 1px #4b81dd;
-  outline: none;
-} */
-
-input[type="range"] {
-  -webkit-appearance: none;
-  margin-right: 15px;
-  width: 200px;
-  height: 7px;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 5px;
-  background-image: linear-gradient(#ff4500, #ff4500);
-  background-size: 70% 100%;
-  background-repeat: no-repeat;
-}
-
-[dir="rtl"] input[type="range"] {
-  background: #ff4500;
-  background-image: linear-gradient(#fff, #fff);
-  background-size: 30% 100%;
-  background-repeat: no-repeat;
-}
-
-/* Input Thumb */
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  background: #ff4500;
-  cursor: ew-resize;
-  box-shadow: 0 0 2px 0 #555;
-  transition: background .3s ease-in-out;
-}
-
-input[type="range"]::-moz-range-thumb {
-  -webkit-appearance: none;
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  background: #ff4500;
-  cursor: ew-resize;
-  box-shadow: 0 0 2px 0 #555;
-  transition: background .3s ease-in-out;
-}
-
-input[type="range"]::-ms-thumb {
-  -webkit-appearance: none;
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  background: #ff4500;
-  cursor: ew-resize;
-  box-shadow: 0 0 2px 0 #555;
-  transition: background .3s ease-in-out;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  background: #ff0200;
-}
-
-input[type="range"]::-moz-range-thumb:hover {
-  background: #ff0200;
-}
-
-input[type="range"]::-ms-thumb:hover {
-  background: #ff0200;
-}
-
 body {
   display: flex;
   background-color: #A7A7A7;
