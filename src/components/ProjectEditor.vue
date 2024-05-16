@@ -90,12 +90,12 @@
           <!--добавить картинку-->
         </button>
 
+
         <!-- <select v-model="selectedFont" @change="applyFont">
           <option v-for="font in fonts" :key="font" :value="font">
             {{ font }}
           </option>
         </select> -->
-
         <!--нужно добавить ластик-->
       </div>
 
@@ -165,7 +165,7 @@
         <!-- </button> -->
       </div>
 
-    <dialog ref="diaOptions" class="dialogNew">
+    <dialog ref="diaOptions" class="dialogNew" >
       <h1>Дополнительные настройки</h1>
       <button class="closeDialog" @click="closeDialog()">Вернуться</button>
     </dialog>
@@ -177,7 +177,6 @@
 <script>
 import { fabric } from "fabric";
 import draggable from "vuedraggable";
-
 export default {
   name: "ProjectEditor",
 
@@ -299,8 +298,8 @@ export default {
             console.log(layerData);
             // Создаем объект слоя на основе данных из файла JSON
             const object = this.canvas.item(layerData.index);
-            object.type = layerData.name;
-            object.selected = false;
+            // object.type = layerData.name;
+            // object.selected = false;
             if (object) {
               // Добавляем объект на холст и в список слоев
               this.addLayer(object);
@@ -509,8 +508,8 @@ export default {
       this.contextMenuVisible = false;
     },
     handleMenuItemClick(action) {
-      if (action == "edit") editNameLayer();
-      if (action == "delete") deleteEl();
+      if (action == "edit") this.editNameLayer();
+      if (action == "delete") this.deleteEl();
       console.log("Выполнено действие:", action);
       this.hideContextMenu();
     },
@@ -533,7 +532,6 @@ export default {
 body {
   display: flex;
   background-color: #a7a7a7;
-  justify-content: flex-start;
 }
 .leftPanel {
   margin: 8px 25px 8px 8px;

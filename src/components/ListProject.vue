@@ -6,7 +6,7 @@
       </button>
       <div class="list-group-project">
         <div v-for="project in projects" :key="project.id">
-          <button class="list-item" @click="navigateToProject(project)">
+          <button class="list-item" >
             <router-link
               :to="{ name: 'edit', params: { projectName: project.name } }" 
               style=" text-decoration: none; color: #ffffff;"
@@ -16,7 +16,9 @@
         </div>
       </div>
     </div>
-
+    <button class="goToReplase" @click="goToRe">
+      <span>***</span>
+    </button>
     <dialog ref="diaOptions" class="dialogNew" style="">
       <h3 style="color: #ffffff;">Введите название проекта</h3>
       <input
@@ -54,6 +56,10 @@ export default {
   },
 
   methods: {
+    goToRe() {
+      this.$router.push({ name: 'ReplaceDialog' });
+    },
+    
     openDialog() {
       this.$refs.diaOptions.style.visibility = "visible";
       this.$refs.diaOptions.showModal();
@@ -77,24 +83,24 @@ export default {
       this.projects = projects.map((name) => ({ name }));
     },
 
-    navigateToProject(project) {
-      // Получаем имя целевого проекта из параметров маршрута
-      const targetProjectName = project.name;
-      // Получаем текущий маршрут
-      const currentRouteName = this.$route.name;
+    // navigateToProject(project) {
+    //   // Получаем имя целевого проекта из параметров маршрута
+    //   const targetProjectName = project.name;
+    //   // Получаем текущий маршрут
+    //   const currentRouteName = this.$route.name;
 
-      // Проверяем, если текущий маршрут не совпадает с целевым маршрутом
-      if (
-        currentRouteName !== "edit" ||
-        this.$route.params.projectName !== targetProjectName
-      ) {
-        // Выполняем переход к целевому маршруту
-        this.$router.push({
-          name: "edit",
-          params: { projectName: targetProjectName },
-        });
-      }
-    },
+    //   // Проверяем, если текущий маршрут не совпадает с целевым маршрутом
+    //   if (
+    //     currentRouteName !== "edit" ||
+    //     this.$route.params.projectName !== targetProjectName
+    //   ) {
+    //     // Выполняем переход к целевому маршруту
+    //     this.$router.push({
+    //       name: "edit",
+    //       params: { projectName: targetProjectName },
+    //     });
+    //   }
+    // },
 
     createProjectFile() {
       const projectName = this.newProjectName.trim();
