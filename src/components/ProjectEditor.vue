@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; flex-direction: row; padding: 5px">
+  <div class="alls">
     <div class="leftPanel">
       <div class="nameProj">
         <h2 class="headNameProj">{{ projectName }}</h2>
@@ -67,8 +67,20 @@
         </div>
 
         <div class="listBtn">
-          <button class="btnss" @click="viewFigure">
+          <button class="btnss" @click="addImg">
             <img class="imgIcons" :src="require('/src/assets/img.png')" />
+          </button>
+        </div>
+
+
+        <div class="listBtn">
+          <button class="btnss" @click="startSelection">
+            <img class="imgIcons" :src="require('/src/assets/img.png')" />Выбрать область
+          </button>
+        </div>
+        <div class="listBtn">
+          <button class="btnss" @click="confirmSelection">
+            <img class="imgIcons" :src="require('/src/assets/img.png')" />Подтвердить выбор
           </button>
         </div>
 
@@ -105,6 +117,8 @@
           width="1280"
           height="720"
           @click="deselectAll"
+          @dragover.prevent
+          @drop="handleDrop"
         ></canvas>
       </div>
 
@@ -131,44 +145,54 @@
       </div>
 
       <div class=""></div>
-
-      <!-- <div class="context-menu" v-show="contextMenuVisible"      >
-        <ul>
-          <li @click="handleMenuItemClick('edit')">Редактировать</li>
-          <li @click="handleMenuItemClick('delete')">Удалить</li>
-         
-        </ul>
-      </div> -->
     </div>
 
     <div class="rightPanel">
       <div class="elementSeting">
         <h2>Настройки элемента</h2>
-        <p>Выбранный элемент:</p>
-        <template v-if="layer">
-          <div>
-            <p>Выбранный элемент: {{ layer }}</p>
-            <!-- Здесь можете добавить другие настройки для выбранного элемента -->
-          </div>
-        </template>
+        <!-- <p>Элемент:</p> -->
+        <div v-if="selectedLayer && selectedLayer.object">
+          <div style="background-color: #90F7FE;">
+            <p>Выбранный элемент: {{ selectedLayer.name }}</p>
+            <p>Тип объекта: {{ selectedLayer.object.type }}</p>
 
+            <label>Name:</label><br>
+            <input type="text" v-model="layerName" id="name" ><br>
+            <label>Width:</label><br>
+            <input v-model="layerWidth" type="number" @change="updateLayerProperty('width', layerWidth)"><br>
+            <label>Height:</label><br>
+            <input v-model="layerHeight" type="number" @change="updateLayerProperty('height', layerHeight)"><br>
+            <label>Color:</label><br>
+            <input type="color" v-model="layerColor" id="name" ><br>
+            <label>Opacity:</label><br>
+            <input type="range"  v-model="layerOpacity" value="0" max="1" step="0.05" id="name" ><br>
+
+
+            <button class="btnss" @click="saveSettings(layerHeight, layerWidth, layerName, layerColor, layerOpacity)"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить настройки</p></button>
+          </div>
+        </div>
       </div>
-        <button class="btnss" @click="saveProject"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить</p></button>
-          <!-- <span style="color: #ffffff">Сохранить</span> -->
-        
+        <button class="btnss" @click="saveProject"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить проект</p></button>
+
         <button class="btnss" @click="saveCanvasAsImage"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить как картинку</p></button>
-          <!-- <span style="color: #ffffff">Сохранить как картинку</span> -->
+
         <button class="btnss" @click="deleteEl"><p style="color: #ffffff; padding: 0; margin: 0">Удалить элемент</p></button>
-          <!-- <span style="color: #ffffff">Удалить элемент</span> -->
-        <button class="btnss" @click="clearCanvas"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить</p></button>
-          <!-- <span style="color: #ffffff">Очистить холст</span> -->
-        <!-- </button> -->
-      </div>
+
+        <button class="btnss" @click="clearCanvas"><p style="color: #ffffff; padding: 0; margin: 0">Очистить холст</p></button>
+      
+    </div>
 
     <dialog ref="diaOptions" class="dialogNew" >
       <h1>Дополнительные настройки</h1>
       <button class="closeDialog" @click="closeDialog()">Вернуться</button>
     </dialog>
+
+    <dialog ref="showDialog" :jsonData="jsonData" @receiveData="handleReceiveData" >
+      <h1>Передаваемая область</h1>
+      <button class="closeShowDialog" @click="closeShowDialog()">Вернуться</button>
+    </dialog>
+    <DialogComp v-if="showDialog"  />
+
   </div>
 </template>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
@@ -177,11 +201,14 @@
 <script>
 import { fabric } from "fabric";
 import draggable from "vuedraggable";
+import DialogComp from './DialogComp.vue';
+
 export default {
   name: "ProjectEditor",
 
   components: {
     draggable,
+    DialogComp,
   },
 
   data() {
@@ -191,34 +218,34 @@ export default {
       projectName: "",
       projectFilePath: "",
       projectData: null,
-
       layers: [],
       selectedLayer: null,
-      selectLay: null,
       showFigureMenu: false,
-
-      fonts: [
-        "Times New Roman",
-        "Pacifico",
-        "VT323",
-        "Quicksand",
-        "Inconsolata",
-      ],
+      showDialog: false,
+      jsonData: null,
+      selectionPosition: null,
+      selectionRect: null, // определение selectionRect
+      fonts: ["Times New Roman", "Pacifico", "VT323", "Quicksand", "Inconsolata"],
       selectedFont: "Times New Roman",
-
-      contextMenuVisible: false,
       contextMenuPosition: { top: 0, left: 0 },
+      layerName: "",
+      layerColor: "",
+      layerOpacity: "",
+      layerWidth: "",
+      layerHeight: "",
 
-      // rangeInputs: [
-      //   { id: "range1", min: 0, max: 100 },
-      //   { id: "range2", min: 0, max: 100 },
-      // ],
-      // numberInput: 0,
-      // isRTL: document.documentElement.dir === "rtl",
     };
   },
 
   mounted() {
+    document.addEventListener('dragover', function (e) {
+      e.preventDefault();
+    }, false);
+
+    document.addEventListener('drop', function (e) {
+      e.preventDefault();
+    }, false);
+
     this.canvas = new fabric.Canvas(this.$refs.canvas, {
       isDrawingMode: false,
     });
@@ -226,13 +253,23 @@ export default {
     // this.initializeCanvas();
     this.canvas.on("selection:created", (e) => {
       const activeObject = e.target;
-      this.selectedLayer = this.layers.find(
+      const selectedLayer = this.layers.find(
         (layer) => layer.object === activeObject
       );
-      if (this.selectedLayer) {
-        this.selectedLayer.selected = true;
+      if (selectedLayer) {
+        selectedLayer.selected = true;
+        console.log(selectedLayer);
+        // Используем this для доступа к свойствам
+        this.layerWidth = selectedLayer.object.width; 
+        this.layerHeight = selectedLayer.object.height;
+        this.layerName = selectedLayer.name; 
+        this.layerColor = selectedLayer.object.fill; 
+        this.layerOpacity = selectedLayer.object.opacity;
       }
     });
+    this.canvas.on("selection:created", this.handleSelection);
+    this.canvas.on("selection:updated", this.handleSelection);
+    this.canvas.on("selection:cleared", this.clearSelection);
   },
 
   // computed: {
@@ -242,14 +279,41 @@ export default {
   // },
 
   methods: {
-    // Подгрузка проекта
-    loadProject() {
-      // Получаем имя проекта из параметров маршрута
-      this.projectName = this.$route.params.projectName;
-      // Формируем путь к файлу проекта
-      this.projectFilePath = `C:/Users/Stoypik/Downloads/${this.projectName}.json`;
 
-      // Загружаем файл проекта с помощью fetch
+    handleDrop(event) {
+      event.preventDefault();
+      const files = event.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            fabric.Image.fromURL(e.target.result, (img) => {
+              img.set({
+                left: 100,
+                top: 100,
+              }).scaleToWidth(200);
+              this.canvas.add(img);
+              this.addLayer(img);
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    },
+
+    updateObject() {
+      if (this.selectedLayer && this.selectedLayer.object) {
+        const object = this.selectedLayer.object;
+        object.setCoords();  
+        this.canvas.renderAll();  
+      }
+    },
+
+    loadProject() {
+      this.projectName = this.$route.params.projectName;
+      this.projectFilePath = `/projects/${this.projectName}.json`;
+
       fetch(this.projectFilePath)
         .then((response) => {
           if (!response.ok) {
@@ -258,23 +322,16 @@ export default {
           return response.json();
         })
         .then((data) => {
-          // Сохраняем данные проекта
-          console.log(data);
-          console.log("fetch");
           this.projectData = data;
-          // Восстанавливаем состояние холста и слои из данных проекта
           this.restoreCanvasState();
         })
         .catch((error) => {
           console.error("Ошибка загрузки проекта:", error);
         });
     },
-
     viewFigure() {
       this.showFigureMenu = !this.showFigureMenu;
-      console.log("viewFigure");
     },
-
     openDialog() {
       this.$refs.diaOptions.style.visibility = "visible";
       this.$refs.diaOptions.showModal();
@@ -283,43 +340,37 @@ export default {
       this.$refs.diaOptions.style.visibility = "hidden";
       this.$refs.diaOptions.close();
     },
-
-    // Восстанавливаем состояние холста из данных проекта
+    openShowDialog() {
+      this.$refs.showDialog.style.visibility = "visible";
+      this.$refs.showDialog.showModal();
+    },
+    closeShowDialog() {
+      this.$refs.showDialog.style.visibility = "hidden";
+      this.$refs.showDialog.close();
+    },
     restoreCanvasState() {
       if (!this.projectData) return;
-
       this.canvas.loadFromJSON(this.projectData.canvas, () => {
         this.canvas.renderAll();
       });
-      // Восстановление слоев
       setTimeout(() => {
         if (this.projectData.layers && Array.isArray(this.projectData.layers)) {
           this.projectData.layers.forEach((layerData) => {
-            console.log(layerData);
-            // Создаем объект слоя на основе данных из файла JSON
             const object = this.canvas.item(layerData.index);
-            // object.type = layerData.name;
-            // object.selected = false;
             if (object) {
-              // Добавляем объект на холст и в список слоев
               this.addLayer(object);
             }
           });
         }
       }, 0);
-      // Восстанавливаем состояние холста
     },
-
     above(ev) {
-      this.layers[ev.newIndex].object.moveTo(
-        this.layers.length - ev.newIndex - 1
-      );
-      // console.log(ev)
+      this.layers[ev.newIndex].object.moveTo(this.layers.length - ev.newIndex - 1);
     },
     addRectangle() {
       const rect = new fabric.Rect({
-        id: this.generateId(), // Генерация уникального ID
-        name: "Rectangle", // Указание имени
+        id: this.generateId(),
+        name: "Rectangle",
         width: 100,
         height: 100,
         fill: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
@@ -329,7 +380,6 @@ export default {
         top: 10,
         selectable: true,
       });
-      console.log(rect.type);
       this.canvas.add(rect);
       this.addLayer(rect);
       this.viewFigure();
@@ -346,7 +396,6 @@ export default {
         top: 50,
         selectable: true,
       });
-      console.log(circle.type);
       this.canvas.add(circle);
       this.addLayer(circle);
       this.viewFigure();
@@ -364,9 +413,7 @@ export default {
             const fabricImage = new fabric.Image(img, {
               id: this.generateId(),
               name: "Image",
-              // type: "img",
             });
-            console.log(fabricImage.type);
             this.canvas.add(fabricImage);
             this.addLayer(fabricImage);
           };
@@ -377,17 +424,19 @@ export default {
       input.click();
       this.viewFigure();
     },
-
     generateId() {
-      return Math.random().toString(36).substr(2, 9); // Генерация случайного ID
+      return Math.random().toString(36).substr(2, 9);
     },
-
     addListeners(layer) {
+      // console.log(layer)
       layer.object.onSelect = () => {
+        // console.log(layer)
+        this.selectedLayer = layer
         layer.selected = true;
       };
       layer.object.onDeselect = () => {
         layer.selected = false;
+        this.selectedLayer = null
       };
     },
     addLayer(object) {
@@ -395,7 +444,6 @@ export default {
       this.layers.unshift(layer);
       this.addListeners(layer);
     },
-
     deselectAll() {
       this.canvas.discardActiveObject();
       this.selectedLayer = null;
@@ -403,82 +451,57 @@ export default {
     },
     selectLayer(layer) {
       if (layer.object) {
+        console.log(layer)
+        this.selectedLayer = layer;
+        this.layerWidth = layer.object.width;
+        this.layerHeight = layer.object.height;
+        this.layerName = layer.name;
+        this.layerColor = layer.object.fill;
+        this.layerOpacity = layer.object.opacity;
         layer.selected = true;
-        console.log(layer.object.type);
         this.canvas.setActiveObject(layer.object);
         this.canvas.renderAll();
-        event.preventDefault(); // Убираем отображение стандартного контекстного меню браузера
+        event.preventDefault();
         this.contextMenuPosition = { top: event.clientY, left: event.clientX };
       }
     },
-
     saveProject() {
-      // Получаем JSON-представление состояния холста
       const canvasData = this.canvas.toJSON();
-
-      // Получаем информацию о слоях
       const layersData = this.layers.map((layer) => ({
         name: layer.name,
         index: this.canvas.getObjects().indexOf(layer.object),
       }));
-
-      // Создаем объект с информацией о слоях и состоянии холста
       const projectData = {
         canvas: canvasData,
         layers: layersData,
       };
-
-      // Преобразуем данные в JSON
       const jsonData = JSON.stringify(projectData);
-
-      // Создаем Blob из JSON-данных
       const blob = new Blob([jsonData], { type: "application/json" });
-
-      // Создаем ссылку для загрузки
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = this.projectName + ".json";
-
-      // Эмулируем клик для загрузки файла
       link.click();
-
-      // Освобождаем ресурсы
       URL.revokeObjectURL(link.href);
     },
-
     saveCanvasAsImage() {
-      // Получаем данные изображения в формате URL
       const dataURL = this.canvas.toDataURL();
-
-      // Создаем ссылку для загрузки
       const link = document.createElement("a");
       link.href = dataURL;
-
-      // Устанавливаем атрибуты для загрузки файла
       link.download = "canvas_image.png";
       link.target = "_blank";
-
-      // Добавляем ссылку в документ и эмулируем клик для загрузки файла
       document.body.appendChild(link);
       link.click();
-
-      // Удаляем ссылку из документа
       document.body.removeChild(link);
     },
-
     deleteEl() {
       const activeObject = this.canvas.getActiveObject();
-      this.layers = this.layers.filter(
-        (layer) => layer.object !== activeObject
-      );
+      this.layers = this.layers.filter(layer => layer.object !== activeObject);
       this.canvas.remove(activeObject);
     },
-
     clearCanvas() {
       this.canvas.clear();
       this.layers = [];
     },
-
     addText() {
       const text = new fabric.Textbox("", {
         left: 50,
@@ -488,13 +511,11 @@ export default {
           Math.random() * 256
         )}, ${Math.floor(Math.random() * 256)})`,
         fontSize: 20,
-        fontFamily: this.selectedFont, // применяем выбранный шрифт
+        fontFamily: this.selectedFont,
       });
-      console.log(text.type);
       this.canvas.add(text);
       this.addLayer(text);
     },
-
     applyFont() {
       if (this.selectedFont !== "Times New Roman") {
         this.loadAndUse(this.selectedFont);
@@ -503,35 +524,149 @@ export default {
         this.canvas.requestRenderAll();
       }
     },
-
-    hideContextMenu() {
-      this.contextMenuVisible = false;
+    loadAndUse(font) {
+      const myfont = new FontFaceObserver(font);
+      myfont.load().then(() => {
+        this.canvas.getActiveObject().set("fontFamily", font);
+        this.canvas.requestRenderAll();
+      });
     },
-    handleMenuItemClick(action) {
-      if (action == "edit") this.editNameLayer();
-      if (action == "delete") this.deleteEl();
-      console.log("Выполнено действие:", action);
-      this.hideContextMenu();
+    startSelection() {
+      // Удаляем предыдущую область, если есть
+      if (this.selectionRect) {
+        this.canvas.remove(this.selectionRect);
+      }
+
+      // Создаем новую квадратную область
+      this.selectionRect = new fabric.Rect({
+        left: 100,
+        top: 100,
+        fill: 'rgba(0, 0, 0, 0.3)',
+        width: 200,
+        height: 200,
+        hasBorders: true,
+        hasControls: true,
+        lockUniScaling: true,
+        selectable: true,
+        lockRotation: true
+      });
+
+      // Добавляем область на холст
+      this.canvas.add(this.selectionRect);
+      this.canvas.setActiveObject(this.selectionRect);
+      this.canvas.renderAll();
+    },
+    confirmSelection() {
+      // Получаем положение и размер выбранной области
+      const selection = this.selectionRect.getBoundingRect();
+      this.selectionPosition = { left: selection.left, top: selection.top, width: selection.width, height: selection.height };
+
+      // Получаем данные холста в формате JSON
+      const canvasData = this.canvas.toJSON();
+
+      // Передаем данные в компонент DialogComp
+      this.jsonData = JSON.stringify({ canvasData, selection: this.selectionPosition });
+      this.showDialog = true;
+    },
+    requestWindow() {
+      // Логика для окна запроса
+    },
+    negativeRequestWindow() {
+      // Логика для негативного запроса
+    },
+    handleReceiveData(data) {
+      // Получаем данные обратно и обновляем холст
+      const { canvasData, selection } = JSON.parse(data);
+
+      // Сохраняем положение области
+      this.selectionPosition = selection;
+
+      // Загружаем данные холста
+      this.canvas.loadFromJSON(canvasData, () => {
+        // Выделяем область на холсте
+        this.selectionRect.set(selection);
+        this.canvas.renderAll();
+      });
+
+      // Скрываем диалог
+      this.showDialog = false;
     },
 
-    editNameLayer() {
-      const activeObject = this.canvas.getActiveObject();
-      if (activeObject && activeObject.type === "textbox") {
-        const text = prompt("Введите новое имя:", activeObject.text);
-        if (text) {
-          activeObject.set("text", text);
-          this.canvas.requestRenderAll();
-        }
+    handleSelection(e) {
+      const activeObject = e.target;
+      const selectedLayer = this.layers.find(
+        (layer) => layer.object === activeObject
+      );
+      if (selectedLayer) {
+        this.selectedLayer = selectedLayer;
+        this.layerWidth = selectedLayer.object.width * selectedLayer.object.scaleX;
+        this.layerHeight = selectedLayer.object.height * selectedLayer.object.scaleY;
+        this.layerName = selectedLayer.name;
+        this.layerColor = selectedLayer.object.fill;
+        this.layerOpacity = selectedLayer.object.opacity;
       }
     },
+
+    clearSelection() {
+      this.selectedLayer = null;
+      this.layerWidth = "";
+      this.layerHeight = "";
+      this.layerName = "";
+      this.layerColor = "";
+      this.layerOpacity = "";
+    }, 
+
+    updateLayerProperty(property, value) {
+      if (this.selectedLayer && this.selectedLayer.object) {
+        const object = this.selectedLayer.object;
+        if (property === 'width' || property === 'height') {
+          object.set(property, parseFloat(value));
+        } else {
+          object.set(property, value);
+        }
+        this.canvas.renderAll();
+      }
+    },
+    updateLayerProperty(property, value) {
+      if (this.selectedLayer && this.selectedLayer.object) {
+        const object = this.selectedLayer.object;
+        if (property === 'width' || property === 'height') {
+          object.set(property, parseFloat(value));
+        } else {
+          object.set(property, value);
+        }
+        this.canvas.renderAll();
+      }
+    },
+
+
+    saveSettings(layerName) {
+      if (this.selectedLayer) {
+        this.selectedLayer.name = layerName; // Сохраняем введенное имя слоя
+        this.selectedLayer.object.set({
+          width: parseFloat(this.layerWidth),
+          height: parseFloat(this.layerHeight),
+          fill: this.layerColor,
+          opacity: parseFloat(this.layerOpacity),
+        })
+
+        console.log(this.selectedLayer)
+        // console.log(this.selectedLayer.object.fill)
+        // console.log(this.selectedLayer.object.opacity)
+        // this.selectedLayer.object.fill = this.layerColor; // Сохраняем введенное имя слоя
+        this.canvas.requestRenderAll();
+        // Обновляем состояние, чтобы изменения отобразились
+        this.$forceUpdate();
+      }
+    }
   },
 };
 </script>
 
 <style scoped>
-body {
+.alls {
   display: flex;
-  background-color: #a7a7a7;
+  background-color: #A7A7A7;
 }
 .leftPanel {
   margin: 8px 25px 8px 8px;
@@ -555,6 +690,9 @@ body {
   text-overflow: ellipsis;
   margin: 0;
   padding: 0;
+}
+.canvasPanel {
+  margin-top: 9px;
 }
 .divLayer {
   display: flex;
@@ -600,7 +738,7 @@ canvas {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  width: 1280px;
+  width: 1284px;
   height: 34px;  
   margin-top: 0px;
   background-color: #2c2c2c;
@@ -690,29 +828,6 @@ textarea:active {
   border-radius: 12px;
   height: 16vh;
   margin-top: 10px;
-}
-
-.context-menu {
-  position: fixed;
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 5px 0;
-  z-index: 1000; /* Убедитесь, что меню отображается поверх остального контента */
-}
-
-.context-menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.context-menu li {
-  padding: 5px 20px;
-  cursor: pointer;
-}
-
-.context-menu li:hover {
-  background-color: #f0f0f0;
 }
 
 .dialogNew {

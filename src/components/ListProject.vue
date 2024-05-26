@@ -6,7 +6,7 @@
       </button>
       <div class="list-group-project">
         <div v-for="project in projects" :key="project.id">
-          <button class="list-item" >
+          <button class="list-item">
             <router-link
               :to="{ name: 'edit', params: { projectName: project.name } }" 
               style=" text-decoration: none; color: #ffffff;"
@@ -69,8 +69,8 @@ export default {
       this.$refs.diaOptions.close();
     },
 
-    async loadProjects() {
-      const files = require.context("C:/Users/Stoypik/Downloads/", false, /.json$/);
+    async loadProjects() {  
+      const files = require.context("C:/Users/stepa/Downloads", false, /.json$/);
       const projects = files.keys().map((filePath) => {
         const parts = filePath.split("/");
         const fileName = parts[parts.length - 1];
