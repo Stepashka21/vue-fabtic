@@ -70,7 +70,7 @@ export default {
     },
 
     async loadProjects() {  
-      const files = require.context("C:/Users/stepa/Downloads", false, /.json$/);
+      const files = require.context("C:/Users/Stoypik/Desktop/vue-fabtic/public/projects", false, /.json$/);
       const projects = files.keys().map((filePath) => {
         const parts = filePath.split("/");
         const fileName = parts[parts.length - 1];

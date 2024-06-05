@@ -166,9 +166,11 @@
             <input type="color" v-model="layerColor" id="name" ><br>
             <label>Opacity:</label><br>
             <input type="range"  v-model="layerOpacity" value="0" max="1" step="0.05" id="name" ><br>
+            <label>Font:</label><br>
+            <input type="range"  v-model="layerFont" value="0" max="1" step="0.05" id="name" ><br>
 
 
-            <button class="btnss" @click="saveSettings(layerHeight, layerWidth, layerName, layerColor, layerOpacity)"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить настройки</p></button>
+            <button class="btnss" @click="saveSettings(layerHeight, layerWidth, layerName, layerColor, layerOpacity, layerFont)"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить настройки</p></button>
           </div>
         </div>
       </div>
@@ -182,8 +184,16 @@
       
     </div>
 
-    <dialog ref="diaOptions" class="dialogNew" >
-      <h1>Дополнительные настройки</h1>
+    <dialog ref="diaOptions" class="dialogNew">
+      <div> 
+        <list-project></list-project>
+      <!-- <div> 
+
+      </div>
+      <div> 
+        <button class="generateee" @click="generImages()">СГЕНЕРИРОВАТЬ</button>
+      </div> -->
+      </div>
       <button class="closeDialog" @click="closeDialog()">Вернуться</button>
     </dialog>
 
@@ -202,6 +212,7 @@
 import { fabric } from "fabric";
 import draggable from "vuedraggable";
 import DialogComp from './DialogComp.vue';
+import ListProject from './ListProject.vue'
 
 export default {
   name: "ProjectEditor",
@@ -209,6 +220,7 @@ export default {
   components: {
     draggable,
     DialogComp,
+    ListProject
   },
 
   data() {
@@ -233,7 +245,7 @@ export default {
       layerOpacity: "",
       layerWidth: "",
       layerHeight: "",
-
+      layerFont: "",
     };
   },
 
@@ -265,6 +277,7 @@ export default {
         this.layerName = selectedLayer.name; 
         this.layerColor = selectedLayer.object.fill; 
         this.layerOpacity = selectedLayer.object.opacity;
+        this.layerFont = selectedLayer.object.font;
       }
     });
     this.canvas.on("selection:created", this.handleSelection);
@@ -458,6 +471,7 @@ export default {
         this.layerName = layer.name;
         this.layerColor = layer.object.fill;
         this.layerOpacity = layer.object.opacity;
+        this.layerFont = layer.object.font;
         layer.selected = true;
         this.canvas.setActiveObject(layer.object);
         this.canvas.renderAll();
@@ -604,6 +618,7 @@ export default {
         this.layerName = selectedLayer.name;
         this.layerColor = selectedLayer.object.fill;
         this.layerOpacity = selectedLayer.object.opacity;
+        this.layerFont = selectedLayer.object.font;
       }
     },
 
@@ -614,6 +629,7 @@ export default {
       this.layerName = "";
       this.layerColor = "";
       this.layerOpacity = "";
+      this.layerFont = "";
     }, 
 
     updateLayerProperty(property, value) {
@@ -642,14 +658,30 @@ export default {
 
     saveSettings(layerName) {
       if (this.selectedLayer) {
-        this.selectedLayer.name = layerName; // Сохраняем введенное имя слоя
-        this.selectedLayer.object.set({
-          width: parseFloat(this.layerWidth),
-          height: parseFloat(this.layerHeight),
-          fill: this.layerColor,
-          opacity: parseFloat(this.layerOpacity),
-        })
+        if(this.selectedLayer.type = textbox) { 
+          this.selectedLayer.name = layerName; // Сохраняем введенное имя слоя 
+          this.selectedLayer.object.set({ 
+            width: parseFloat(this.layerWidth), 
+            height: parseFloat(this.layerHeight), 
+            fill: this.layerColor, 
+            opacity: parseFloat(this.layerOpacity), 
+            font: this.layerFont, 
+          })
+        }
+        
+        if(this.selectedLayer.type = image) {
 
+        }
+        
+        if(this.selectedLayer.type = (rect || circle)) {
+          this.selectedLayer.name = layerName; // Сохраняем введенное имя слоя
+          this.selectedLayer.object.set({
+            width: parseFloat(this.layerWidth),
+            height: parseFloat(this.layerHeight),
+            fill: this.layerColor,
+            opacity: parseFloat(this.layerOpacity),
+          })
+        }
         console.log(this.selectedLayer)
         // console.log(this.selectedLayer.object.fill)
         // console.log(this.selectedLayer.object.opacity)
@@ -699,7 +731,7 @@ export default {
   flex-direction: column;
   align-items: center;
   background-color: #2c2c2c;
-  margin-top: 29px;
+  margin-top: 29px; 
   border-radius: 12px;
   height: 89vh;
 }
@@ -831,12 +863,15 @@ textarea:active {
 }
 
 .dialogNew {
+  height: 660px;
+  width: 1180px;
   border: none;
   display: flex;
-  border-radius: 20px;
+  border-radius: 15px;
   flex-direction: column;
   align-items: center;
   visibility: hidden;
+  background-color: #ffffff;
 }
 
 .additionalMenu {
@@ -864,5 +899,14 @@ textarea:active {
   background-color: #bbb;
 }
 
+.generateee {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: medium;
+  height: 43px;
+  width: 143px;
+  border-radius: 8px;
+  border: none;
+  color: rgba(0, 0, 0, 0.63);
+}
 </style>
 
