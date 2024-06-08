@@ -72,15 +72,20 @@
           </button>
         </div>
 
-
         <div class="listBtn">
           <button class="btnss" @click="startSelection">
-            <img class="imgIcons" :src="require('/src/assets/img.png')" />Выбрать область
+            <img
+              class="imgIcons"
+              :src="require('/src/assets/img.png')"
+            />Выбрать область
           </button>
         </div>
         <div class="listBtn">
           <button class="btnss" @click="confirmSelection">
-            <img class="imgIcons" :src="require('/src/assets/img.png')" />Подтвердить выбор
+            <img
+              class="imgIcons"
+              :src="require('/src/assets/img.png')"
+            />Подтвердить выбор
           </button>
         </div>
 
@@ -96,19 +101,6 @@
             <!--круг-->
           </button>
         </div>
-
-        <button class="btnss" @click="addImg">
-          <img class="btnIcon" src="" />
-          <!--добавить картинку-->
-        </button>
-
-
-        <!-- <select v-model="selectedFont" @change="applyFont">
-          <option v-for="font in fonts" :key="font" :value="font">
-            {{ font }}
-          </option>
-        </select> -->
-        <!--нужно добавить ластик-->
       </div>
 
       <div class="canav">
@@ -121,98 +113,166 @@
           @drop="handleDrop"
         ></canvas>
       </div>
-
-      <div class="" style="display: flex; flex-direction: row">
-        <div class="" style="margin-right: 20px">
-          <div class="querySelectionPanel">
-            <div class="request" @click="requestWindow()">
-              <h3 class="queryPanel">Запрос на генерацию изображения</h3>
-            </div>
-            <div class="negativeRequest" @click="negativeRequestWindow()">
-              <h3 class="queryPanel">Негативный запрос</h3>
-            </div>
-          </div>
-          <div class="textareaQuery">
-            <textarea class="textAr" id="" cols="30" rows="10">Введите текст...</textarea>
-          </div>
-        </div>
-        <div class="rigthSettingAndPhoto" style="">
-          <button class="btnsSetting" @click="openDialog">
-            <h3>Дополнительно</h3>
-          </button>
-          <div class="rigthPhoto"></div>
-        </div>
-      </div>
-
-      <div class=""></div>
     </div>
 
     <div class="rightPanel">
+      <button @click="viewDocs()"><p>!Документация</p></button>
       <div class="elementSeting">
-        <h2>Настройки элемента</h2>
-        <!-- <p>Элемент:</p> -->
         <div v-if="selectedLayer && selectedLayer.object">
-          <div style="background-color: #90F7FE;">
+          <div class="viewSetings">
             <p>Выбранный элемент: {{ selectedLayer.name }}</p>
             <p>Тип объекта: {{ selectedLayer.object.type }}</p>
 
-            <label>Name:</label><br>
-            <input type="text" v-model="layerName" id="name" ><br>
-            <label>Width:</label><br>
-            <input v-model="layerWidth" type="number" @change="updateLayerProperty('width', layerWidth)"><br>
-            <label>Height:</label><br>
-            <input v-model="layerHeight" type="number" @change="updateLayerProperty('height', layerHeight)"><br>
-            <label>Color:</label><br>
-            <input type="color" v-model="layerColor" id="name" ><br>
-            <label>Opacity:</label><br>
-            <input type="range"  v-model="layerOpacity" value="0" max="1" step="0.05" id="name" ><br>
-            <label>Font:</label><br>
-            <input type="range"  v-model="layerFont" value="0" max="1" step="0.05" id="name" ><br>
+            <label>Name:</label><br />
+            <input type="text" v-model="layerName" id="name" /><br />
 
+            <!-- Параметры для текста -->
+            <label>Width:</label><br />
+            <input
+              v-model="layerWidth"
+              type="number"
+              @change="updateLayerProperty('width', layerWidth)"
+            /><br />
+            <label>Height:</label><br />
+            <input
+              v-model="layerHeight"
+              type="number"
+              @change="updateLayerProperty('height', layerHeight)"
+            /><br />
 
-            <button class="btnss" @click="saveSettings(layerHeight, layerWidth, layerName, layerColor, layerOpacity, layerFont)"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить настройки</p></button>
+            <!-- Параметры для объектов с цветом заливки -->
+            <div v-if="selectedLayer.object.type !== 'image'">
+              <label>Color:</label><br />
+              <input type="color" v-model="layerColor" id="color" /><br />
+              <label>Opacity:</label><br />
+              <input
+                type="range"
+                v-model="layerOpacity"
+                value="0"
+                max="1"
+                step="0.05"
+                id="opacity"
+              /><br />
+            </div>
+
+            <!-- Параметры для текста -->
+            <div v-if="selectedLayer.object.type === 'textbox'">
+              <label>Font:</label><br />
+              <select v-model="layerFont" @change="applyFont">
+                <option v-for="font in fonts" :value="font" :key="font">
+                  {{ font }}
+                </option></select
+              ><br />
+              <label>Font Size:</label><br />
+              <input
+                v-model="layerFontSize"
+                type="number"
+                @change="updateLayerProperty('fontSize', layerFontSize)"
+              /><br />
+              <div class="btnBlock">
+                <button class="btns" @click="toggleBold">
+                  <img
+                    class="imgBtns"
+                    :src="require('/src/assets/zhirnuy.png')"
+                  />
+                </button>
+                <button class="btns" @click="toggleUnderline">
+                  <img
+                    class="imgBtns"
+                    :src="require('/src/assets/podcherk.png')"
+                  /></button
+                ><br />
+                <button class="btns" @click="toggleItalic">
+                  <img
+                    class="imgBtns"
+                    :src="require('/src/assets/kursiv.png')"
+                  />
+                </button>
+              </div>
+              <div class="textAlignButtons">
+                <label>Горизонтальное выравнивание:</label><br />
+                <div>
+                  <button :class="{'active': selectedTextAlign === 'left'}" @click="setTextAlign('left')">Слева</button>
+                  <button :class="{'active': selectedTextAlign === 'center'}" @click="setTextAlign('center')">По центру</button>
+                  <button :class="{'active': selectedTextAlign === 'right'}" @click="setTextAlign('right')">Справа</button>
+                  <button :class="{'active': selectedTextAlign === 'justify'}" @click="setTextAlign('justify')">По ширине</button>
+                </div>
+              </div>
+
+              <!-- Кнопки вертикального выравнивания -->
+              <div class="textVerticalAlignButtons">
+                <label>Вертикальное выравнивание:</label><br />
+                <div>
+                  <button :class="{'active': selectedVerticalAlign === 'top'}" @click="setVerticalAlign('top')">Сверху</button>
+                  <button :class="{'active': selectedVerticalAlign === 'center'}" @click="setVerticalAlign('center')">По центру</button>
+                  <button :class="{'active': selectedVerticalAlign === 'bottom'}" @click="setVerticalAlign('bottom')">Снизу</button>
+                </div>
+              </div>
+            </div>
+
+            <button class="btnsss" @click="saveSettings">
+              <p style="color: #ffffff; padding: 0; margin: 0">
+                Сохранить настройки
+              </p>
+            </button>
           </div>
         </div>
       </div>
-        <button class="btnss" @click="saveProject"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить проект</p></button>
+      <button class="btnss" @click="saveProject">
+        <p style="color: #ffffff; padding: 0; margin: 0">Сохранить проект</p>
+      </button>
 
-        <button class="btnss" @click="saveCanvasAsImage"><p style="color: #ffffff; padding: 0; margin: 0">Сохранить как картинку</p></button>
+      <button class="btnss" @click="saveCanvasAsImage">
+        <p style="color: #ffffff; padding: 0; margin: 0">
+          Сохранить как картинку
+        </p>
+      </button>
 
-        <button class="btnss" @click="deleteEl"><p style="color: #ffffff; padding: 0; margin: 0">Удалить элемент</p></button>
+      <button class="btnss" @click="deleteEl">
+        <p style="color: #ffffff; padding: 0; margin: 0">Удалить элемент</p>
+      </button>
 
-        <button class="btnss" @click="clearCanvas"><p style="color: #ffffff; padding: 0; margin: 0">Очистить холст</p></button>
-      
+      <button class="btnss" @click="clearCanvas">
+        <p style="color: #ffffff; padding: 0; margin: 0">Очистить холст</p>
+      </button>
     </div>
 
     <dialog ref="diaOptions" class="dialogNew">
-      <div> 
-        <list-project></list-project>
-      <!-- <div> 
-
-      </div>
-      <div> 
-        <button class="generateee" @click="generImages()">СГЕНЕРИРОВАТЬ</button>
-      </div> -->
+      <div>
+        <h1>Просто кнопка с диалоговым окном</h1>
       </div>
       <button class="closeDialog" @click="closeDialog()">Вернуться</button>
     </dialog>
 
-    <dialog ref="showDialog" :jsonData="jsonData" @receiveData="handleReceiveData" >
-      <h1>Передаваемая область</h1>
-      <button class="closeShowDialog" @click="closeShowDialog()">Вернуться</button>
+    <dialog ref="diaDocs" class="dialogNew">
+      <div>
+        <h1>Информация</h1>
+      </div>
+      <button class="closeDialog" @click="closeDocs()">Вернуться</button>
     </dialog>
-    <DialogComp v-if="showDialog"  />
 
+    <dialog
+      ref="showDialog"
+      :jsonData="jsonData"
+      @receiveData="handleReceiveData"
+    >
+      <h1>Передаваемая область</h1>
+      <button class="closeShowDialog" @click="closeShowDialog()">
+        Вернуться
+      </button>
+    </dialog>
+    <DialogComp v-if="showDialog" />
   </div>
 </template>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
   
 <script>
 import { fabric } from "fabric";
+import FontFaceObserver from "fontfaceobserver";
 import draggable from "vuedraggable";
-import DialogComp from './DialogComp.vue';
-import ListProject from './ListProject.vue'
+import DialogComp from "./DialogComp.vue";
+import ListProject from "./ListProject.vue";
 
 export default {
   name: "ProjectEditor",
@@ -220,7 +280,7 @@ export default {
   components: {
     draggable,
     DialogComp,
-    ListProject
+    ListProject,
   },
 
   data() {
@@ -237,7 +297,13 @@ export default {
       jsonData: null,
       selectionPosition: null,
       selectionRect: null, // определение selectionRect
-      fonts: ["Times New Roman", "Pacifico", "VT323", "Quicksand", "Inconsolata"],
+      fonts: [
+        "Times New Roman",
+        "Pacifico",
+        "VT323",
+        "Quicksand",
+        "Inconsolata",
+      ],
       selectedFont: "Times New Roman",
       contextMenuPosition: { top: 0, left: 0 },
       layerName: "",
@@ -246,66 +312,41 @@ export default {
       layerWidth: "",
       layerHeight: "",
       layerFont: "",
+      layerFontSize: "",
+      selectedTextAlign: "left",
+      selectedVerticalAlign: "top",
     };
   },
 
   mounted() {
-    document.addEventListener('dragover', function (e) {
-      e.preventDefault();
-    }, false);
-
-    document.addEventListener('drop', function (e) {
-      e.preventDefault();
-    }, false);
+    document.addEventListener("dragover", (e) => e.preventDefault(), false);
+    document.addEventListener("drop", (e) => e.preventDefault(), false);
 
     this.canvas = new fabric.Canvas(this.$refs.canvas, {
       isDrawingMode: false,
     });
     this.loadProject();
-    // this.initializeCanvas();
-    this.canvas.on("selection:created", (e) => {
-      const activeObject = e.target;
-      const selectedLayer = this.layers.find(
-        (layer) => layer.object === activeObject
-      );
-      if (selectedLayer) {
-        selectedLayer.selected = true;
-        console.log(selectedLayer);
-        // Используем this для доступа к свойствам
-        this.layerWidth = selectedLayer.object.width; 
-        this.layerHeight = selectedLayer.object.height;
-        this.layerName = selectedLayer.name; 
-        this.layerColor = selectedLayer.object.fill; 
-        this.layerOpacity = selectedLayer.object.opacity;
-        this.layerFont = selectedLayer.object.font;
-      }
-    });
+
     this.canvas.on("selection:created", this.handleSelection);
     this.canvas.on("selection:updated", this.handleSelection);
     this.canvas.on("selection:cleared", this.clearSelection);
   },
-
-  // computed: {
-  //   selectedLayer() {
-  //     return this.layers.find(layer => layer.selected);
-  //   }
-  // },
-
   methods: {
-
     handleDrop(event) {
       event.preventDefault();
       const files = event.dataTransfer.files;
       if (files.length > 0) {
         const file = files[0];
-        if (file.type.startsWith('image/')) {
+        if (file.type.startsWith("image/")) {
           const reader = new FileReader();
           reader.onload = (e) => {
             fabric.Image.fromURL(e.target.result, (img) => {
-              img.set({
-                left: 100,
-                top: 100,
-              }).scaleToWidth(200);
+              img
+                .set({
+                  left: 100,
+                  top: 100,
+                })
+                .scaleToWidth(200);
               this.canvas.add(img);
               this.addLayer(img);
             });
@@ -318,8 +359,8 @@ export default {
     updateObject() {
       if (this.selectedLayer && this.selectedLayer.object) {
         const object = this.selectedLayer.object;
-        object.setCoords();  
-        this.canvas.renderAll();  
+        object.setCoords();
+        this.canvas.renderAll();
       }
     },
 
@@ -329,21 +370,43 @@ export default {
 
       fetch(this.projectFilePath)
         .then((response) => {
-          if (!response.ok) {
-            throw new Error("Файл не найден");
-          }
+          if (!response.ok) throw new Error("Файл не найден");
           return response.json();
         })
         .then((data) => {
           this.projectData = data;
           this.restoreCanvasState();
         })
-        .catch((error) => {
-          console.error("Ошибка загрузки проекта:", error);
-        });
+        .catch((error) => console.error("Ошибка загрузки проекта:", error));
+    },
+    addLayer(object) {
+      const layer = { name: object.type, object, selected: false };
+      this.layers.unshift(layer);
+    },
+    restoreCanvasState() {
+      if (!this.projectData) return;
+      this.canvas.loadFromJSON(this.projectData.canvas, () => {
+        this.canvas.renderAll();
+      });
+      setTimeout(() => {
+        if (this.projectData.layers && Array.isArray(this.projectData.layers)) {
+          this.projectData.layers.forEach((layerData) => {
+            const object = this.canvas.item(layerData.index);
+            if (object) this.addLayer(object);
+          });
+        }
+      }, 0);
     },
     viewFigure() {
       this.showFigureMenu = !this.showFigureMenu;
+    },
+    viewDocs() {
+      this.$refs.diaDocs.style.visibility = "visible";
+      this.$refs.diaDocs.showModal();
+    },
+    closeDocs() {
+      this.$refs.diaDocs.style.visibility = "hidden";
+      this.$refs.diaDocs.showModal();
     },
     openDialog() {
       this.$refs.diaOptions.style.visibility = "visible";
@@ -361,24 +424,10 @@ export default {
       this.$refs.showDialog.style.visibility = "hidden";
       this.$refs.showDialog.close();
     },
-    restoreCanvasState() {
-      if (!this.projectData) return;
-      this.canvas.loadFromJSON(this.projectData.canvas, () => {
-        this.canvas.renderAll();
-      });
-      setTimeout(() => {
-        if (this.projectData.layers && Array.isArray(this.projectData.layers)) {
-          this.projectData.layers.forEach((layerData) => {
-            const object = this.canvas.item(layerData.index);
-            if (object) {
-              this.addLayer(object);
-            }
-          });
-        }
-      }, 0);
-    },
     above(ev) {
-      this.layers[ev.newIndex].object.moveTo(this.layers.length - ev.newIndex - 1);
+      this.layers[ev.newIndex].object.moveTo(
+        this.layers.length - ev.newIndex - 1
+      );
     },
     addRectangle() {
       const rect = new fabric.Rect({
@@ -441,21 +490,14 @@ export default {
       return Math.random().toString(36).substr(2, 9);
     },
     addListeners(layer) {
-      // console.log(layer)
       layer.object.onSelect = () => {
-        // console.log(layer)
-        this.selectedLayer = layer
+        this.selectedLayer = layer;
         layer.selected = true;
       };
       layer.object.onDeselect = () => {
         layer.selected = false;
-        this.selectedLayer = null
+        this.selectedLayer = null;
       };
-    },
-    addLayer(object) {
-      const layer = { name: object.type, object, selected: false };
-      this.layers.unshift(layer);
-      this.addListeners(layer);
     },
     deselectAll() {
       this.canvas.discardActiveObject();
@@ -464,19 +506,22 @@ export default {
     },
     selectLayer(layer) {
       if (layer.object) {
-        console.log(layer)
+        console.log(layer.object);
         this.selectedLayer = layer;
-        this.layerWidth = layer.object.width;
-        this.layerHeight = layer.object.height;
         this.layerName = layer.name;
+        this.layerWidth = layer.object.width * layer.object.scaleX;
+        this.layerHeight = layer.object.height * layer.object.scaleY;
         this.layerColor = layer.object.fill;
         this.layerOpacity = layer.object.opacity;
-        this.layerFont = layer.object.font;
-        layer.selected = true;
+        if (layer.object.type === "textbox") {
+          this.layerFont = layer.object.fontFamily;
+          this.layerFontSize = layer.object.fontSize;
+        } else {
+          this.layerFont = null;
+          this.layerFontSize = null;
+        }
         this.canvas.setActiveObject(layer.object);
         this.canvas.renderAll();
-        event.preventDefault();
-        this.contextMenuPosition = { top: event.clientY, left: event.clientX };
       }
     },
     saveProject() {
@@ -509,7 +554,9 @@ export default {
     },
     deleteEl() {
       const activeObject = this.canvas.getActiveObject();
-      this.layers = this.layers.filter(layer => layer.object !== activeObject);
+      this.layers = this.layers.filter(
+        (layer) => layer.object !== activeObject
+      );
       this.canvas.remove(activeObject);
     },
     clearCanvas() {
@@ -521,30 +568,110 @@ export default {
         left: 50,
         top: 50,
         width: 150,
-        fill: `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
-          Math.random() * 256
-        )}, ${Math.floor(Math.random() * 256)})`,
+        height: 100, 
+        fill: "red",
         fontSize: 20,
         fontFamily: this.selectedFont,
+        underline: false,
+        fontWeight: "normal",
+        fontStyle: "normal",
+        textAlign: this.selectedTextAlign,
+        originY: 'top' 
       });
       this.canvas.add(text);
       this.addLayer(text);
+      this.setVerticalAlign(this.selectedVerticalAlign); 
     },
     applyFont() {
-      if (this.selectedFont !== "Times New Roman") {
-        this.loadAndUse(this.selectedFont);
-      } else {
-        this.canvas.getActiveObject().set("fontFamily", this.selectedFont);
-        this.canvas.requestRenderAll();
+      const activeObject = this.canvas.getActiveObject();
+      if (activeObject && activeObject.type === "textbox") {
+        activeObject.set("fontFamily", this.selectedFont);
+        this.canvas.renderAll();
       }
     },
-    loadAndUse(font) {
-      const myfont = new FontFaceObserver(font);
-      myfont.load().then(() => {
-        this.canvas.getActiveObject().set("fontFamily", font);
-        this.canvas.requestRenderAll();
-      });
+    // Метод для переключения подчеркивания текста
+    toggleUnderline() {
+      const activeObject = this.canvas.getActiveObject();
+      if (activeObject && activeObject.type === "textbox") {
+        activeObject.set("underline", !activeObject.underline);
+        this.canvas.renderAll();
+      }
     },
+
+    // Метод для переключения жирного шрифта
+    toggleBold() {
+      const activeObject = this.canvas.getActiveObject();
+      if (activeObject && activeObject.type === "textbox") {
+        activeObject.set(
+          "fontWeight",
+          activeObject.fontWeight === "bold" ? "normal" : "bold"
+        );
+        this.canvas.renderAll();
+      }
+    },
+
+    // Метод для переключения курсивного шрифта
+    toggleItalic() {
+      const activeObject = this.canvas.getActiveObject();
+      if (activeObject && activeObject.type === "textbox") {
+        activeObject.set(
+          "fontStyle",
+          activeObject.fontStyle === "italic" ? "normal" : "italic"
+        );
+        this.canvas.renderAll();
+      }
+    },
+    // Метод для применения горизонтального выравнивания
+    setTextAlign(align) {
+    this.selectedTextAlign = align;
+    this.applyTextAlign();
+  },
+  // Метод для установки вертикального выравнивания
+  setVerticalAlign(alignment) {
+    this.selectedVerticalAlign = alignment;
+    const activeObject = this.canvas.getActiveObject();
+    if (activeObject && activeObject.type === 'textbox') {
+      let offsetY = 0;
+      switch (alignment) {
+        case 'top':
+          offsetY = 0;
+          break;
+        case 'center':
+          offsetY = (activeObject.height - activeObject.calcTextHeight()) / 2;
+          break;
+        case 'bottom':
+          offsetY = activeObject.height - activeObject.calcTextHeight();
+          break;
+      }
+      activeObject.set('top', activeObject.top + offsetY);
+      this.canvas.renderAll();
+    }
+  },
+  applyTextAlign() {
+    const activeObject = this.canvas.getActiveObject();
+    if (activeObject && activeObject.type === 'textbox') {
+      activeObject.set('textAlign', this.selectedTextAlign);
+      this.canvas.renderAll();
+    }
+  },
+
+  // applyVerticalAlign() {
+  //   const activeObject = this.canvas.getActiveObject();
+  //   if (activeObject && activeObject.type === 'textbox') {
+  //     activeObject.set('originY', this.selectedVerticalAlign);
+  //     this.canvas.renderAll();
+  //   }
+  // },
+    // loadAndUse(font) {
+    //   const myfont = new FontFaceObserver(font);
+    //   myfont.load().then(() => {
+    //     const activeObject = this.canvas.getActiveObject();
+    //     activeObject.set("fontFamily", font);
+    //     this.canvas.requestRenderAll();
+    //   }).catch(e => {
+    //     console.error(`Font ${font} could not be loaded: ${e.message}`);
+    //   });
+    // },
     startSelection() {
       // Удаляем предыдущую область, если есть
       if (this.selectionRect) {
@@ -555,14 +682,14 @@ export default {
       this.selectionRect = new fabric.Rect({
         left: 100,
         top: 100,
-        fill: 'rgba(0, 0, 0, 0.3)',
+        fill: "rgba(0, 0, 0, 0.3)",
         width: 200,
         height: 200,
         hasBorders: true,
         hasControls: true,
         lockUniScaling: true,
         selectable: true,
-        lockRotation: true
+        lockRotation: true,
       });
 
       // Добавляем область на холст
@@ -573,13 +700,21 @@ export default {
     confirmSelection() {
       // Получаем положение и размер выбранной области
       const selection = this.selectionRect.getBoundingRect();
-      this.selectionPosition = { left: selection.left, top: selection.top, width: selection.width, height: selection.height };
+      this.selectionPosition = {
+        left: selection.left,
+        top: selection.top,
+        width: selection.width,
+        height: selection.height,
+      };
 
       // Получаем данные холста в формате JSON
       const canvasData = this.canvas.toJSON();
 
       // Передаем данные в компонент DialogComp
-      this.jsonData = JSON.stringify({ canvasData, selection: this.selectionPosition });
+      this.jsonData = JSON.stringify({
+        canvasData,
+        selection: this.selectionPosition,
+      });
       this.showDialog = true;
     },
     requestWindow() {
@@ -612,30 +747,25 @@ export default {
         (layer) => layer.object === activeObject
       );
       if (selectedLayer) {
-        this.selectedLayer = selectedLayer;
-        this.layerWidth = selectedLayer.object.width * selectedLayer.object.scaleX;
-        this.layerHeight = selectedLayer.object.height * selectedLayer.object.scaleY;
-        this.layerName = selectedLayer.name;
-        this.layerColor = selectedLayer.object.fill;
-        this.layerOpacity = selectedLayer.object.opacity;
-        this.layerFont = selectedLayer.object.font;
+        this.selectLayer(selectedLayer);
       }
     },
 
     clearSelection() {
       this.selectedLayer = null;
+      this.layerName = "";
       this.layerWidth = "";
       this.layerHeight = "";
-      this.layerName = "";
       this.layerColor = "";
       this.layerOpacity = "";
       this.layerFont = "";
-    }, 
+      this.layerFontSize = "";
+    },
 
     updateLayerProperty(property, value) {
       if (this.selectedLayer && this.selectedLayer.object) {
         const object = this.selectedLayer.object;
-        if (property === 'width' || property === 'height') {
+        if (property === "width" || property === "height") {
           object.set(property, parseFloat(value));
         } else {
           object.set(property, value);
@@ -643,54 +773,25 @@ export default {
         this.canvas.renderAll();
       }
     },
-    updateLayerProperty(property, value) {
-      if (this.selectedLayer && this.selectedLayer.object) {
-        const object = this.selectedLayer.object;
-        if (property === 'width' || property === 'height') {
-          object.set(property, parseFloat(value));
-        } else {
-          object.set(property, value);
-        }
-        this.canvas.renderAll();
-      }
-    },
-
-
-    saveSettings(layerName) {
+    saveSettings() {
       if (this.selectedLayer) {
-        if(this.selectedLayer.type = textbox) { 
-          this.selectedLayer.name = layerName; // Сохраняем введенное имя слоя 
-          this.selectedLayer.object.set({ 
-            width: parseFloat(this.layerWidth), 
-            height: parseFloat(this.layerHeight), 
-            fill: this.layerColor, 
-            opacity: parseFloat(this.layerOpacity), 
-            font: this.layerFont, 
-          })
+        const object = this.selectedLayer.object;
+        this.selectedLayer.name = this.layerName;
+        object.set({
+          width: parseFloat(this.layerWidth),
+          height: parseFloat(this.layerHeight),
+          fill: this.layerColor,
+          opacity: parseFloat(this.layerOpacity),
+        });
+        if (object.type === "textbox") {
+          object.set({
+            fontFamily: this.layerFont,
+            fontSize: parseFloat(this.layerFontSize),
+          });
         }
-        
-        if(this.selectedLayer.type = image) {
-
-        }
-        
-        if(this.selectedLayer.type = (rect || circle)) {
-          this.selectedLayer.name = layerName; // Сохраняем введенное имя слоя
-          this.selectedLayer.object.set({
-            width: parseFloat(this.layerWidth),
-            height: parseFloat(this.layerHeight),
-            fill: this.layerColor,
-            opacity: parseFloat(this.layerOpacity),
-          })
-        }
-        console.log(this.selectedLayer)
-        // console.log(this.selectedLayer.object.fill)
-        // console.log(this.selectedLayer.object.opacity)
-        // this.selectedLayer.object.fill = this.layerColor; // Сохраняем введенное имя слоя
-        this.canvas.requestRenderAll();
-        // Обновляем состояние, чтобы изменения отобразились
-        this.$forceUpdate();
+        this.canvas.renderAll();
       }
-    }
+    },
   },
 };
 </script>
@@ -698,7 +799,7 @@ export default {
 <style scoped>
 .alls {
   display: flex;
-  background-color: #A7A7A7;
+  background-color: #a7a7a7;
 }
 .leftPanel {
   margin: 8px 25px 8px 8px;
@@ -731,7 +832,7 @@ export default {
   flex-direction: column;
   align-items: center;
   background-color: #2c2c2c;
-  margin-top: 29px; 
+  margin-top: 29px;
   border-radius: 12px;
   height: 89vh;
 }
@@ -771,11 +872,46 @@ canvas {
   flex-direction: row;
   justify-content: flex-start;
   width: 1284px;
-  height: 34px;  
+  height: 34px;
   margin-top: 0px;
   background-color: #2c2c2c;
   border-radius: 8px 8px 0 0;
 }
+.btnBlock {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.btns {
+  background-color: #2c2c2c;
+  border: none;
+  border-inline: none;
+  font-size: 28px;
+}
+.imgBtns {
+  width: 28px;
+}
+.textAlignButtons div,
+.textVerticalAlignButtons div {
+  display: flex;
+  gap: 10px;
+}
+
+.textAlignButtons button,
+.textVerticalAlignButtons button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.textAlignButtons button.active,
+.textVerticalAlignButtons button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
 .btnss {
   font-size: 16px;
   margin: 5px;
@@ -788,17 +924,22 @@ canvas {
 }
 .btnss:hover {
   cursor: pointer;
-  background-color:#0c8ce9;
-}
-
-
-/* .listBtn {
   background-color: #0c8ce9;
-} */
-/* select {
-  max-height: 20px;
-  margin-top: 6px;
-} */
+}
+.btnsss {
+  font-size: 16px;
+  margin: 5px;
+  justify-content: space-between;
+  height: 25px;
+  border-radius: 10px;
+  border: none;
+  border-inline: none;
+  background-color: #000000;
+}
+.btnsss:hover {
+  cursor: pointer;
+  background-color: #0c8ce9;
+}
 
 .querySelectionPanel {
   width: 40vw;
@@ -894,13 +1035,18 @@ textarea:active {
   width: auto;
   height: auto;
 }
-
 .elementSeting {
-  background-color: #bbb;
+  margin-top: 5px;
 }
-
+.viewSetings {
+  color: #ffffff;
+  margin: 9px;
+  padding: 5px;
+  background-color: #2c2c2c;
+  border-radius: 12px;
+}
 .generateee {
-  font-family: 'Times New Roman', Times, serif;
+  font-family: "Times New Roman", Times, serif;
   font-size: medium;
   height: 43px;
   width: 143px;
